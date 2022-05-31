@@ -1,37 +1,58 @@
-import React, { useRef, useEffect, useState } from "react";
-import styled from "styled-components";
+import React, { useEffect, useState } from "react";
 import { Map, Marker, MapProvider } from "react-map-gl";
 import SearchBar from "../SearchBar/SearchBar";
-import mapMarker from "./map-marker.png";
+import mapMarker from "./src/map-marker.png";
+import mapMarkerOne from "./src/numeric-1-circle.png";
+import mapMarkerTwo from "./src/numeric-2-circle.png";
+import mapMarkerThree from "./src/numeric-3-circle.png";
+import mapMarkerFour from "./src/numeric-4-circle.png";
+import mapMarkerFive from "./src/numeric-5-circle.png";
+import mapMarkerSix from "./src/numeric-6-circle.png";
+import mapMarkerSeven from "./src/numeric-7-circle.png";
+import mapMarkerEight from "./src/numeric-8-circle.png";
+import mapMarkerNine from "./src/numeric-9-circle.png";
 import EventList from "../EventList/EventList";
-
 import "mapbox-gl/dist/mapbox-gl.css";
+import ChangeBounds from "./ChangeBounds";
+import { getMarkersFromLatLong } from "./MapContainerLogic";
 
 export default function MapContainer() {
-  const [location, setLocation] = useState({ lat: "", long: "" });
+  // const [location, setLocation] = useState({ lat: "", long: "" });
   const [resultData, setResultData] = useState([]);
+  const [executeSearchButtonPressed, setExecuteSearchButtonPressed] =
+    useState(false);
   const [longitude, setLng] = useState(-0.05318);
   const [latitude, setLat] = useState(51.47707);
   const [zoom, setZoom] = useState(10);
-  const [searchMarker, setSearchMarker] = useState(false);
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        console.log("Latitude is :", position.coords.latitude);
-        console.log("Longitude is :", position.coords.longitude);
-        setLocation({
-          lat: position.coords.latitude,
-          long: position.coords.longitude,
-        });
-      });
-    } else {
-      alert("Sorry Not available!");
+  const mapMarkerImgArr = [
+    mapMarkerOne,
+    mapMarkerTwo,
+    mapMarkerThree,
+    mapMarkerFour,
+    mapMarkerFive,
+    mapMarkerSix,
+    mapMarkerSeven,
+    mapMarkerEight,
+    mapMarkerNine,
+  ];
+
+  async function receivedLocationForProcessing(location) {
+    if (location.lat !== "" && location.long !== "") {
+      //run logic to execute data
+      const data = await getMarkersFromLatLong(location);
+      setLat(location.lat);
+      setLng(location.long);
+      setExecuteSearchButtonPressed(true);
+      setResultData(data);
     }
-  }, [setLocation]);
+  }
 
-  function handleResultData(data) {
-    setResultData(data);
+  function highlightEvent(e, marker) {
+    const element = document.getElementById(marker.eventResult._id);
+    const elementLocation = element.getBoundingClientRect();
+    window.scrollTo(elementLocation);
+    element.style.color = "red";
   }
 
   return (
@@ -52,32 +73,34 @@ export default function MapContainer() {
               marker.eventResult.venue_id.location.coordinates;
             return (
               <Marker
+                onClick={(e) => {
+                  highlightEvent(e, marker);
+                }}
                 key={index}
                 longitude={longitude}
                 latitude={latitude}
                 anchor="bottom"
               >
                 {" "}
-                <img alt="map-marker" src={mapMarker} />
+                <img alt="map-marker" src={mapMarkerImgArr[index]} />
               </Marker>
             );
           })}
-          {searchMarker && (
-            <Marker
-              longitude={location.longitude}
-              latitude={location.latitude}
-              anchor="bottom"
-            >
-              <img alt="map-marker" src={mapMarker} />
+          {executeSearchButtonPressed && (
+            <Marker longitude={longitude} latitude={latitude} anchor="bottom">
+              <img alt="my-location" src={mapMarker} />
             </Marker>
+          )}
+          {executeSearchButtonPressed && (
+            <ChangeBounds
+              longitude={longitude}
+              latitude={latitude}
+              resultData={resultData}
+            />
           )}
         </Map>
         <SearchBar
-          location={location}
-          setLocation={setLocation}
-          setResultData={setResultData}
-          setSearchMarker={setSearchMarker}
-          handleResultData={handleResultData}
+          receivedLocationForProcessing={receivedLocationForProcessing}
         />
       </MapProvider>
       {resultData.length > 0 && <EventList listItems={resultData}> </EventList>}
