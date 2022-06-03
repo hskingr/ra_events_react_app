@@ -15,6 +15,8 @@ import EventList from "../EventList/EventList";
 import "mapbox-gl/dist/mapbox-gl.css";
 import ChangeBounds from "./ChangeBounds";
 import { getMarkersFromLatLong } from "./MapContainerLogic";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 
 export default function MapContainer() {
   // const [location, setLocation] = useState({ lat: "", long: "" });
@@ -38,20 +40,30 @@ export default function MapContainer() {
   ];
 
   async function receivedLocationForProcessing(location) {
-    if (location.lat !== "" && location.long !== "") {
-      //run logic to execute data
-      const data = await getMarkersFromLatLong(location);
-      setLat(location.lat);
-      setLng(location.long);
-      setExecuteSearchButtonPressed(true);
-      setResultData(data);
+    try {
+      if (location.lat !== "" && location.long !== "") {
+        //run logic to execute data
+        const data = await getMarkersFromLatLong(location);
+        if (data === null) {
+          console.error("Fetching MongoDB Query Error");
+        } else {
+          setLat(location.lat);
+          setLng(location.long);
+          setExecuteSearchButtonPressed(true);
+          setResultData(data);
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 
+  //no longer working correctly
   function highlightEvent(e, marker) {
     const element = document.getElementById(marker.eventResult._id);
     const elementLocation = element.getBoundingClientRect();
-    window.scrollTo(elementLocation);
+    const resultsList = document.querySelector("#resultsList");
+    resultsList.scrollTo(elementLocation);
     element.style.color = "red";
   }
 
@@ -65,7 +77,7 @@ export default function MapContainer() {
             latitude,
             zoom,
           }}
-          style={{ width: "100%", height: 400 }}
+          style={{ width: "100%", height: "40vh" }}
           mapStyle="mapbox://styles/mapbox/light-v9"
         >
           {resultData.map((marker, index) => {
@@ -80,6 +92,7 @@ export default function MapContainer() {
                 longitude={longitude}
                 latitude={latitude}
                 anchor="bottom"
+                icon-allow-overlap={true}
               >
                 {" "}
                 <img alt="map-marker" src={mapMarkerImgArr[index]} />
@@ -99,11 +112,16 @@ export default function MapContainer() {
             />
           )}
         </Map>
+      </MapProvider>
+      <Container justifyContent="center">
         <SearchBar
+          sx={{ m: 2 }}
           receivedLocationForProcessing={receivedLocationForProcessing}
         />
-      </MapProvider>
-      {resultData.length > 0 && <EventList listItems={resultData}> </EventList>}
+      </Container>
+      <Container id="resultsList" sx={{ height: "35vh", overflowY: "scroll" }}>
+        <EventList listItems={resultData}> </EventList>
+      </Container>
     </>
   );
 }

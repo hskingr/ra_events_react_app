@@ -4,9 +4,13 @@ import Grid from "@mui/material/Grid";
 
 export default function EventList(props) {
   const { listItems } = props;
+  const gridStyle = {
+    bgcolor: "grey",
+  };
+
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid sx={gridStyle} container spacing={0}>
         {listItems.map((item, index) => {
           return (
             <Grid item xs={12}>

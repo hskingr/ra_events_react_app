@@ -4,10 +4,6 @@ import { lightFormat, format } from "date-fns";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-const FlexItem = styled.div`
-  padding: 1em;
-  flex: 0 0 30%;
-`;
 
 export default function ListItem({ item }) {
   // console.log(item);
@@ -34,8 +30,19 @@ export default function ListItem({ item }) {
     const timeEndDate = new Date(timeEnd);
     const formattedTimeEndDate = lightFormat(timeEndDate, `HH:mm`);
     // console.log(lightFormat(timeEndDate, `HH:mm`));
+
+    const cardStyle = {
+      borderBottom: 1,
+      borderRadius: 0,
+      p: 1,
+      m: 0,
+      bgcolor: "#fbc02d",
+      minWidth: "100wh",
+      color: "white",
+    };
+
     return (
-      <Card id={_id} sx={{ minWidth: "100wh" }}>
+      <Card id={_id} sx={cardStyle}>
         <CardContent>
           <Typography variant="h5">{eventName}</Typography>
           <Typography variant="body1">{formattedEventDate}</Typography>

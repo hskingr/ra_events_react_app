@@ -11,6 +11,6 @@ export default async function callTopTenResults({ lat, long }) {
     );
     return await result.data;
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 }
