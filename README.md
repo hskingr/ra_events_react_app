@@ -1,5 +1,7 @@
 # RA Events React App
 
+![](./docs/img/wip_scr_1.png)
+
 This is an API running on Node.js using Express. There is one endpoint that mainly serves the react app for user queries to return the top 10 events closest to their query.
 
 The API should not be exposed to the internet when run and should only be available to the docker services running on the same docker network.
