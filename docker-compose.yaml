@@ -1,0 +1,15 @@
+version: "3"
+services:
+   ra_events_react_app:
+    container_name: ra_events_react_app
+    build:
+      context: .
+      args:
+        - REACT_APP_MAPBOX_ACCESS_TOKEN
+    image: ra_events_react_app:v1
+    ports:
+      - 3000:80
+networks:
+  default:
+    name: ra_events_grabber_network
+    external: true

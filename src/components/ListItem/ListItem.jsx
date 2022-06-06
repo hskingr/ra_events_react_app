@@ -32,13 +32,11 @@ export default function ListItem({ item }) {
     // console.log(lightFormat(timeEndDate, `HH:mm`));
 
     const cardStyle = {
-      borderBottom: 1,
-      borderRadius: 0,
       p: 1,
       m: 0,
-      bgcolor: "#fbc02d",
       minWidth: "100wh",
-      color: "white",
+      height: "50vh",
+      bgcolor: "rgba(0, 0, 0, 0)",
     };
 
     return (

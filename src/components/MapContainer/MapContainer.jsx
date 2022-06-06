@@ -18,6 +18,13 @@ import { getMarkersFromLatLong } from "./MapContainerLogic";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 
+const mapStyle = { width: "100%", height: "40vh" };
+const searchBarStyle = { height: "10vh" };
+const resultsStyle = {
+  height: "50vh",
+  overflowY: "scroll",
+};
+
 export default function MapContainer() {
   // const [location, setLocation] = useState({ lat: "", long: "" });
   const [resultData, setResultData] = useState([]);
@@ -77,7 +84,7 @@ export default function MapContainer() {
             latitude,
             zoom,
           }}
-          style={{ width: "100%", height: "40vh" }}
+          style={mapStyle}
           mapStyle="mapbox://styles/mapbox/light-v9"
         >
           {resultData.map((marker, index) => {
@@ -113,13 +120,12 @@ export default function MapContainer() {
           )}
         </Map>
       </MapProvider>
-      <Container justifyContent="center">
+      <Container justifyContent="center" sx={searchBarStyle}>
         <SearchBar
-          sx={{ m: 2 }}
           receivedLocationForProcessing={receivedLocationForProcessing}
         />
       </Container>
-      <Container id="resultsList" sx={{ height: "35vh", overflowY: "scroll" }}>
+      <Container id="resultsList" sx={resultsStyle}>
         <EventList listItems={resultData}> </EventList>
       </Container>
     </>
