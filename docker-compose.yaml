@@ -6,7 +6,7 @@ services:
       context: .
       args:
         - REACT_APP_MAPBOX_ACCESS_TOKEN
-    image: ra_events_react_app:v1
+    image: f4zphp27xi2s27yn/my_repo_topor:ra_events_react_app
     ports:
       - 3000:80
 networks:

@@ -46,14 +46,17 @@ export default function MapContainer() {
     mapMarkerNine,
   ];
 
-  async function receivedLocationForProcessing(location) {
+  async function receivedLocationForProcessing(location, date) {
     try {
-      if (location.lat !== "" && location.long !== "") {
+      if (location == null) {
+        console.error("Location Not Found -- Handle Error");
+      } else if (location.lat !== "" && location.long !== "") {
         //run logic to execute data
-        const data = await getMarkersFromLatLong(location);
-        if (data === null) {
+        const data = await getMarkersFromLatLong(location, date);
+        if (data == null) {
           console.error("Fetching MongoDB Query Error");
         } else {
+          console.log(location, date);
           setLat(location.lat);
           setLng(location.long);
           setExecuteSearchButtonPressed(true);
@@ -74,6 +77,7 @@ export default function MapContainer() {
     element.style.color = "red";
   }
 
+  console.log(`Amount of Results: ${resultData.length}`);
   return (
     <>
       <MapProvider>
