@@ -1,4 +1,3 @@
-import React from "react";
 import { useMap } from "react-map-gl";
 import calcBoundsFromCoordinates from "../utils/calcBoundsFromCoordinates";
 
@@ -23,6 +22,6 @@ export default function ChangeBounds({ resultData, longitude, latitude }) {
   const bounds = fitPointsInMap(resultData, [longitude, latitude]);
   // console.log(bounds);
   map.fitBounds(bounds, {
-    padding: { top: 60, bottom: 60, left: 5, right: 5 },
+    padding: { top: 60, bottom: 60, left: 30, right: 30 },
   });
 }

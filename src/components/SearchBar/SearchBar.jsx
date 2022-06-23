@@ -21,7 +21,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/system";
 
-const inputStyle = {
+const formControlStyle = {
   borderRadius: 5,
   width: "75%",
 };
@@ -40,6 +40,15 @@ const InputWrapper = styled(Box)`
   display: flex;
   margin-top: 1em;
 `;
+
+const inputStyle = {
+  borderRadius: "3px",
+  border: "1.5px solid rgba(0, 0, 0, 0.4)",
+  borderColor: "red",
+  borderRadius: "10px",
+  color: "red",
+  "& .MuiInput-input": {},
+};
 
 export default function SearchBar({ receivedLocationForProcessing }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,7 +80,7 @@ export default function SearchBar({ receivedLocationForProcessing }) {
 
   return (
     <InputWrapper>
-      <FormControl variant="outlined" fullWidth={true} sx={inputStyle}>
+      <FormControl variant="outlined" fullWidth={true} sx={formControlStyle}>
         <Input
           id="search-bar"
           className="text"
@@ -79,7 +88,9 @@ export default function SearchBar({ receivedLocationForProcessing }) {
           placeholder={gpsLocaterLoading === true ? "Loading..." : null}
           defaultValue={gpsLocaterTextResult}
           size="small"
+          disableUnderline="true"
           fullWidth={true}
+          sx={inputStyle}
           endAdornment={
             <InputAdornment position="end">
               <IconButton onClick={() => myLocationButtonPressed()}>
@@ -93,7 +104,7 @@ export default function SearchBar({ receivedLocationForProcessing }) {
           }
         />
       </FormControl>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
+      {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
         <DatePicker
           inputFormat="MM/dd/yyyy"
           value={dateValue}
@@ -110,7 +121,7 @@ export default function SearchBar({ receivedLocationForProcessing }) {
             />
           )}
         />
-      </LocalizationProvider>
+      </LocalizationProvider> */}
     </InputWrapper>
   );
 }
