@@ -4,9 +4,11 @@ import { lightFormat, format } from "date-fns";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
+import { decodeImage, encodeImage } from "./listItemLogic.js";
+import { CardMedia, Divider } from "@mui/material";
+import Grid from "@mui/material/Grid";
 
 export default function ListItem({ item }) {
-  // console.log(item);
   try {
     const {
       _id,
@@ -16,6 +18,7 @@ export default function ListItem({ item }) {
       timeEnd,
       venue,
       lineup,
+      flyerImage,
       linkedArtists,
       eventURL,
       eventName,
@@ -32,23 +35,62 @@ export default function ListItem({ item }) {
     // console.log(lightFormat(timeEndDate, `HH:mm`));
 
     const cardStyle = {
-      p: 1,
+      p: 0,
       m: 0,
       minWidth: "100wh",
-      height: "50vh",
+      height: "100%",
       bgcolor: "rgba(0, 0, 0, 0)",
     };
 
+    const cardContentStyle = {
+      p: 0,
+    };
+
+    // console.log(flyerImage[0].image);
+    // const base64Image = encodeImage(flyerImage[0].image);
+    // console.log(base64Image);
+
     return (
       <Card id={_id} sx={cardStyle}>
+        <CardContent sx={cardContentStyle}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              {flyerImage[0].image !== null && (
+                <CardMedia
+                  component="img"
+                  height="194"
+                  image={`${flyerImage[0].image}`}
+                  alt={flyerImage[0].fileName}
+                />
+              )}
+            </Grid>
+          </Grid>
+        </CardContent>
         <CardContent>
-          <Typography variant="h5">{eventName}</Typography>
-          <Typography variant="body1">{formattedEventDate}</Typography>
-          <Typography variant="body1">
-            {formattedTimeStartDate} - {formattedTimeEndDate}
-          </Typography>
-          <Typography variant="body1">{venue}</Typography>
-          <Typography variant="body1">{eventURL}</Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={7}>
+              <Typography variant="h4">{venue}</Typography>
+            </Grid>
+            <Grid item xs={1}>
+              <Divider sx={{ ml: 1, mr: 1 }} orientation="vertical" />
+            </Grid>
+            <Grid item xs={4}>
+              <Typography variant="body1">{formattedEventDate}</Typography>
+              <Typography variant="body1">
+                {formattedTimeStartDate} - {formattedTimeEndDate}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">{eventName}</Typography>
+            </Grid>
+            <Grid item sx={12}>
+              <Typography variant="h6">Lineup</Typography>
+              <Typography variant="body1">{lineup}</Typography>
+            </Grid>
+            <Grid item sx={12}>
+              <Typography variant="body1">{eventURL}</Typography>
+            </Grid>
+          </Grid>
         </CardContent>
       </Card>
     );

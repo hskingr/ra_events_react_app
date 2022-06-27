@@ -22,6 +22,6 @@ export default function ChangeBounds({ resultData, longitude, latitude }) {
   const bounds = fitPointsInMap(resultData, [longitude, latitude]);
   // console.log(bounds);
   map.fitBounds(bounds, {
-    padding: { top: 60, bottom: 60, left: 30, right: 30 },
+    padding: { top: 180, bottom: 180, left: 30, right: 30 },
   });
 }

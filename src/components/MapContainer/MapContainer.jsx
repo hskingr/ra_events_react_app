@@ -11,6 +11,8 @@ import mapMarkerSix from "./src/numeric-6-circle.png";
 import mapMarkerSeven from "./src/numeric-7-circle.png";
 import mapMarkerEight from "./src/numeric-8-circle.png";
 import mapMarkerNine from "./src/numeric-9-circle.png";
+import Header from "../../Header/Header";
+import raMarker from "./src/ra.png";
 import EventList from "../EventList/EventList";
 import "mapbox-gl/dist/mapbox-gl.css";
 import ChangeBounds from "./ChangeBounds";
@@ -28,13 +30,17 @@ const mapStyle = {
     height: "100%",
   },
 };
-const searchBarStyle = { height: "10vh" };
+const searchBarStyle = { height: "10vh", position: "absolute", top: "80vh" };
 
 export default function MapContainer() {
   // const [location, setLocation] = useState({ lat: "", long: "" });
-  const [resultData, setResultData] = useState([]);
+  const [{ requestedEvents, amountOfResults }, setResultData] = useState({
+    requestedEvents: [],
+    amountOfResults: 0,
+  });
   const [executeSearchButtonPressed, setExecuteSearchButtonPressed] =
     useState(false);
+  const [resultsLoaded, setResultsLoaded] = useState(false);
   const [longitude, setLng] = useState(-0.05318);
   const [latitude, setLat] = useState(51.47707);
   const [zoom, setZoom] = useState(10);
@@ -66,6 +72,9 @@ export default function MapContainer() {
           setLng(location.long);
           setExecuteSearchButtonPressed(true);
           setResultData(data);
+          if (data.amountOfResults > 0) {
+            setResultsLoaded(true);
+          }
         }
       }
     } catch (error) {
@@ -82,9 +91,10 @@ export default function MapContainer() {
     element.style.color = "red";
   }
 
-  console.log(`Amount of Results: ${resultData.length}`);
+  console.log(`Amount of Results: ${amountOfResults}`);
   return (
     <>
+      <Header resultsCount={amountOfResults} isResultsLoaded={resultsLoaded} />
       <MapProvider>
         <Map
           mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
@@ -96,7 +106,7 @@ export default function MapContainer() {
           style={mapStyle}
           mapStyle="mapbox://styles/mapbox/dark-v10"
         >
-          {resultData.map((marker, index) => {
+          {requestedEvents.map((marker, index) => {
             const [longitude, latitude] =
               marker.eventResult.venue_id.location.coordinates;
             return (
@@ -111,7 +121,7 @@ export default function MapContainer() {
                 icon-allow-overlap={true}
               >
                 {" "}
-                <img alt="map-marker" src={mapMarkerImgArr[index]} />
+                <img alt="map-marker" src={raMarker} />
               </Marker>
             );
           })}
@@ -124,7 +134,7 @@ export default function MapContainer() {
             <ChangeBounds
               longitude={longitude}
               latitude={latitude}
-              resultData={resultData}
+              resultData={requestedEvents}
             />
           )}
         </Map>
@@ -134,8 +144,7 @@ export default function MapContainer() {
           receivedLocationForProcessing={receivedLocationForProcessing}
         />
       </Container>
-
-      <EventList listItems={resultData}> </EventList>
+      <EventList listItems={requestedEvents} resultsLoaded={resultsLoaded} />
     </>
   );
 }
