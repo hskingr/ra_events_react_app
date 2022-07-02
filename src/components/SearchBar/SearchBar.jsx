@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import styled from "styled-components";
 import { styled } from "@mui/material/styles";
-import {
-  getNewResultsFromSearch,
-  myLocationSearch,
-  getAddressFromLatLong,
-} from "./SearchBarLogic";
+import { getNewResultsFromSearch, myLocationSearch } from "./SearchBarLogic";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { InputUnstyled } from "@mui/base";
@@ -44,11 +40,19 @@ const inputStyle = {
   border: "1.5px solid rgba(0, 0, 0, 0)",
   borderRadius: "10px",
   backgroundColor: "white",
-  padding: "5px",
-  "& .MuiInput-input": {},
+  padding: "10px",
+  "& .MuiInput-input": {
+    padding: 0,
+    paddingLeft: 1,
+  },
 };
 
-export default function SearchBar({ receivedLocationForProcessing }) {
+export default function SearchBar({
+  receivedLocationForProcessing,
+  updateNeighborhood,
+  myLocationSearch,
+  getAddressFromLatLong,
+}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [gpsLocaterLoading, setGpsLocaterLoading] = useState(false);
   const [gpsLocaterTextResult, setGpsLocaterTextResult] = useState("");
@@ -57,11 +61,16 @@ export default function SearchBar({ receivedLocationForProcessing }) {
   async function myLocationButtonPressed() {
     // expect to return the location of the user
     document.querySelector("#search-bar").value = "";
+    // change the text field of the search bar to loading
     await setGpsLocaterLoading(true);
     setGpsLocaterTextResult("Loading...");
+    // get location by asking for it in the browser, returns lat and long
     const location = await myLocationSearch();
     await receivedLocationForProcessing(location, dateValue);
-    await setGpsLocaterTextResult(await getAddressFromLatLong(location));
+    const [{ place_name: address }, { text: neighborhood }] =
+      await getAddressFromLatLong(location);
+    await setGpsLocaterTextResult(neighborhood);
+    updateNeighborhood(neighborhood);
     await setGpsLocaterLoading(false);
     document.querySelector("#search-bar").value = gpsLocaterTextResult;
   }
@@ -84,7 +93,7 @@ export default function SearchBar({ receivedLocationForProcessing }) {
 
   return (
     <InputWrapper>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
+      {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
         <DatePicker
           inputFormat="MM/dd/yyyy"
           value={dateValue}
@@ -101,7 +110,7 @@ export default function SearchBar({ receivedLocationForProcessing }) {
             />
           )}
         />
-      </LocalizationProvider>
+      </LocalizationProvider> */}
       <FormControl variant="outlined" fullWidth={true} sx={formControlStyle}>
         <Input
           id="search-bar"
@@ -109,8 +118,8 @@ export default function SearchBar({ receivedLocationForProcessing }) {
           onInput={(event) => setSearchQuery(event.target.value)}
           placeholder={gpsLocaterLoading === true ? "Loading..." : null}
           defaultValue={gpsLocaterTextResult}
-          size="small"
-          disableUnderline="true"
+          disableUnderline={true}
+          size="normal"
           fullWidth={true}
           sx={inputStyle}
           onKeyDown={(event) => checkIfEnterIsPressed(event, searchQuery)}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Map, Marker, MapProvider } from "react-map-gl";
 import SearchBar from "../SearchBar/SearchBar";
 import mapMarker from "./src/map-marker.png";
@@ -11,14 +11,18 @@ import mapMarkerSix from "./src/numeric-6-circle.png";
 import mapMarkerSeven from "./src/numeric-7-circle.png";
 import mapMarkerEight from "./src/numeric-8-circle.png";
 import mapMarkerNine from "./src/numeric-9-circle.png";
-import Header from "../../Header/Header";
+import Header from "../Header/Header";
 import raMarker from "./src/ra.png";
 import EventList from "../EventList/EventList";
 import "mapbox-gl/dist/mapbox-gl.css";
 import ChangeBounds from "./ChangeBounds";
-import { getMarkersFromLatLong } from "./MapContainerLogic";
-import Box from "@mui/material/Box";
+import {
+  getMarkersFromLatLong,
+  myLocationSearch,
+  getAddressFromLatLong,
+} from "./MapContainerLogic";
 import Container from "@mui/material/Container";
+import mapboxgl from "mapbox-gl";
 
 const mapStyle = {
   width: "100vw",
@@ -26,24 +30,49 @@ const mapStyle = {
   padding: "0",
   position: "absolute",
   top: "0",
-  "& .map-container": {
+  "& .mapContainer": {
     height: "100%",
   },
 };
 const searchBarStyle = { height: "10vh", position: "absolute", top: "80vh" };
 
 export default function MapContainer() {
+  useEffect(() => {
+    //Do an automatic request for location and update
+    async function getLoc() {
+      try {
+        const location = await myLocationSearch();
+        await receivedLocationForProcessing(location, new Date());
+        console.log(`date today: ${new Date()}`);
+        const [{ place_name: address }, { text: neighborhood }] =
+          await getAddressFromLatLong(location);
+        updateNeighborhood(neighborhood);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getLoc();
+  }, []);
+
   // const [location, setLocation] = useState({ lat: "", long: "" });
   const [{ requestedEvents, amountOfResults }, setResultData] = useState({
     requestedEvents: [],
     amountOfResults: 0,
   });
+  const [neighborhood, setNeighborhood] = useState(``);
   const [executeSearchButtonPressed, setExecuteSearchButtonPressed] =
     useState(false);
   const [resultsLoaded, setResultsLoaded] = useState(false);
   const [longitude, setLng] = useState(-0.05318);
   const [latitude, setLat] = useState(51.47707);
   const [zoom, setZoom] = useState(10);
+  const [resultsPageNumber, setResultsPageNumber] = useState(0);
+  const [openDrawer, setOpenDrawer] = useState(false);
+
+  const toggleDrawer = (newOpen) => () => {
+    setOpenDrawer(newOpen);
+    console.log(`changing drawer state`);
+  };
 
   const mapMarkerImgArr = [
     mapMarkerOne,
@@ -56,6 +85,26 @@ export default function MapContainer() {
     mapMarkerEight,
     mapMarkerNine,
   ];
+
+  function updateNeighborhood(data) {
+    // data should be a string
+    setNeighborhood(data);
+  }
+
+  async function loadMoreEvents() {
+    try {
+      console.log(`loading more events`);
+      setResultsPageNumber(resultsPageNumber + 1);
+      const data = await getMarkersFromLatLong(
+        { lat: latitude, long: longitude },
+        new Date(),
+        resultsPageNumber
+      );
+      setResultData(data);
+    } catch (error) {
+      console.log(`${error} \n loadMoreEventsError`);
+    }
+  }
 
   async function receivedLocationForProcessing(location, date) {
     try {
@@ -84,11 +133,14 @@ export default function MapContainer() {
 
   //no longer working correctly
   function highlightEvent(e, marker) {
-    const element = document.getElementById(marker.eventResult._id);
-    const elementLocation = element.getBoundingClientRect();
-    const resultsList = document.querySelector("#resultsList");
-    resultsList.scrollTo(elementLocation);
-    element.style.color = "red";
+    // const element = document.getElementById(marker.eventResult._id);
+    // const elementLocation = element.getBoundingClientRect();
+    // const resultsList = document.querySelector("#resultsList");
+    // resultsList.scrollTo(elementLocation);
+    // element.style.color = "red";
+    setOpenDrawer(true);
+    console.log("clicked");
+    /* NEED TO USE REFS FOR EACH ELEMENT AND THEN REFERENCE THEM WITH A SCROLLTO METHOD */
   }
 
   console.log(`Amount of Results: ${amountOfResults}`);
@@ -141,10 +193,20 @@ export default function MapContainer() {
       </MapProvider>
       <Container justifyContent="center" sx={searchBarStyle}>
         <SearchBar
+          myLocationSearch={myLocationSearch}
           receivedLocationForProcessing={receivedLocationForProcessing}
+          updateNeighborhood={updateNeighborhood}
+          getAddressFromLatLong={getAddressFromLatLong}
         />
       </Container>
-      <EventList listItems={requestedEvents} resultsLoaded={resultsLoaded} />
+      <EventList
+        listItems={requestedEvents}
+        resultsLoaded={resultsLoaded}
+        neighborhood={neighborhood}
+        loadMoreEvents={loadMoreEvents}
+        toggleDrawer={toggleDrawer}
+        openDrawer={openDrawer}
+      />
     </>
   );
 }

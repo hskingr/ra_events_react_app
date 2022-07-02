@@ -22,7 +22,7 @@ export default function Header({ resultsCount, isResultsLoaded }) {
   };
 
   return (
-    <Container justifyContent="center" sx={headerStyle}>
+    <Container sx={headerStyle}>
       <Typography align="center" variant="h4" sx={headingStyle}>
         Resident Mapper
       </Typography>
@@ -46,7 +46,6 @@ export default function Header({ resultsCount, isResultsLoaded }) {
           }
           variant="filled"
           color="primary"
-          startDecorator={<CircleIcon />}
           label={resultTest}
         />
       </Stack>

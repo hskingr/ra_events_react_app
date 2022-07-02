@@ -2,16 +2,43 @@ import React from "react";
 import ListItem from "../ListItem/ListItem";
 import Grid from "@mui/material/Grid";
 import { Container } from "@mui/system";
-import { Box, Collapse, SwipeableDrawer, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Collapse,
+  SwipeableDrawer,
+  Typography,
+} from "@mui/material";
 import { Global } from "@emotion/react";
+import { styled } from "@mui/material/styles";
+import { grey } from "@mui/material/colors";
 
-export default function EventList({ listItems, resultsLoaded }) {
-  const [open, setOpen] = React.useState(false);
-  const toggleDrawer = (newOpen) => () => {
-    setOpen(newOpen);
-  };
-
+export default function EventList({
+  listItems,
+  resultsLoaded,
+  neighborhood,
+  loadMoreEvents,
+  toggleDrawer,
+  openDrawer,
+}) {
   // console.log(listItems);
+
+  const Puller = styled(Box)(({ theme }) => ({
+    width: 100,
+    height: 4,
+    backgroundColor: theme.palette.mode === "light" ? grey[300] : grey[900],
+    borderRadius: 3,
+    position: "absolute",
+    top: 8,
+    left: "calc(50% - 50px)",
+  }));
+  const eventsAroundStyle = {
+    pt: 3,
+    pb: 2.5,
+    "& .red": {
+      color: "red",
+    },
+  };
 
   const outerDiv = {
     height: "100%",
@@ -37,64 +64,81 @@ export default function EventList({ listItems, resultsLoaded }) {
     /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   return (
-    resultsLoaded && (
-      <Container sx={{ height: "100%" }}>
-        <Global
-          styles={{
-            ".MuiDrawer-root > .MuiPaper-root": {
-              overflow: "visible",
-              height: `calc(80% - ${drawerBleeding}px)`,
-            },
+    <Container sx={{ height: "100%" }}>
+      <Global
+        styles={{
+          ".MuiDrawer-root > .MuiPaper-root": {
+            overflow: "visible",
+            height: `calc(80% - ${drawerBleeding}px)`,
+          },
+        }}
+      />
+      <SwipeableDrawer
+        anchor="bottom"
+        open={openDrawer}
+        transitionDuration={10}
+        swipeAreaWidth={`${drawerBleeding}px`}
+        onClose={toggleDrawer(false)}
+        onOpen={toggleDrawer(true)}
+        disableSwipeToOpen={false}
+        disableBackdropTransition={!iOS}
+        disableDiscovery={iOS}
+        ModalProps={{
+          keepMounted: true,
+        }}
+        className="drawer"
+      >
+        <Box
+          className="TempDrawer"
+          sx={{
+            position: "absolute",
+            top: -drawerBleeding,
+            borderTopLeftRadius: 8,
+            borderTopRightRadius: 8,
+            visibility: "visible",
+            right: 0,
+            left: 0,
+            backgroundColor: "rgb(255, 255, 255)",
           }}
-        />
-        <SwipeableDrawer
-          anchor="bottom"
-          open={open}
-          transitionDuration={10}
-          swipeAreaWidth={`${drawerBleeding}px`}
-          onClose={toggleDrawer(false)}
-          onOpen={toggleDrawer(true)}
-          disableSwipeToOpen={false}
-          disableBackdropTransition={!iOS}
-          disableDiscovery={iOS}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          className="drawer"
         >
-          <Box
-            className="TempDrawer"
-            sx={{
-              position: "absolute",
-              top: -drawerBleeding,
-              borderTopLeftRadius: 8,
-              borderTopRightRadius: 8,
-              visibility: "visible",
-              right: 0,
-              left: 0,
-              backgroundColor: "rgb(255, 255, 255)",
-            }}
-          >
-            <Typography sx={{ p: 2, color: "text.secondary" }}>
-              {" "}
-              Events in (Location)
-            </Typography>
-          </Box>
-          <Container sx={outerDiv}>
-            <Container sx={innerDiv}>
-              <Grid sx={scrollDiv} container spacing={2}>
-                {listItems.map((item, index) => {
+          <Puller />
+          <Typography align="center" variant="body2" sx={eventsAroundStyle}>
+            <span>Events Around</span>
+            <span className="red"> {neighborhood} </span>
+          </Typography>
+        </Box>
+        <Container sx={outerDiv}>
+          <Container sx={innerDiv}>
+            <Grid sx={scrollDiv} container spacing={2}>
+              {listItems.length > 0 ? (
+                listItems.map((item, index) => {
                   return (
                     <Grid item xs={12}>
-                      <ListItem item={item} key={index} />
+                      <ListItem item={item} key={index} index={index} />
                     </Grid>
                   );
-                })}
+                })
+              ) : (
+                <Grid item xs={12}>
+                  {/* STYLE THIS NO RESULTS SECTION */}
+                  <p> No Results </p>
+                </Grid>
+              )}
+              <Grid item xs={12} sx={{ mb: 2 }}>
+                <Button
+                  onClick={() => {
+                    loadMoreEvents();
+                  }}
+                  fullWidth={true}
+                  variant="contained"
+                >
+                  Load More
+                </Button>
               </Grid>
-            </Container>
+            </Grid>
           </Container>
-        </SwipeableDrawer>
-      </Container>
-    )
+        </Container>
+      </SwipeableDrawer>
+    </Container>
   );
 }

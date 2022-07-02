@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import { lightFormat, format } from "date-fns";
 import Card from "@mui/material/Card";
@@ -7,6 +7,8 @@ import Typography from "@mui/material/Typography";
 import { decodeImage, encodeImage } from "./listItemLogic.js";
 import { CardMedia, Divider } from "@mui/material";
 import Grid from "@mui/material/Grid";
+import noPosterImg from "./assets/no_poster_img.png";
+import Link from "@mui/material/Link";
 
 export default function ListItem({ item }) {
   try {
@@ -23,6 +25,33 @@ export default function ListItem({ item }) {
       eventURL,
       eventName,
     } = item.eventResult;
+
+    // Need to make the obect consistent because
+    // there are too many different types
+    // console.log(eventName, flyerImage);
+    let image, fileName;
+    if (flyerImage === null) {
+      // console.log(`flyerImage is Null`);
+      image = null;
+      fileName = null;
+    } else if (flyerImage.length === 0) {
+      // console.log("No FlyerImage Object");
+      image = null;
+      fileName = null;
+    } else if (flyerImage[0].image === null) {
+      // console.log(`flyerImage object exists, but object property is null`);
+      image = null;
+      fileName = null;
+    } else {
+      // console.log(`flyerImage exists and there is a Picture url`);
+      image = flyerImage[0].image;
+      fileName = flyerImage[0].fileName;
+      // This add the base64 string at the start if it does not exista lready
+      if (image.match(`data:image/jpeg;base64,`) === null) {
+        image = `data:image/jpeg;base64,${image}`;
+      }
+      // console.log(image.match("data:image/jpeg;base64,"));
+    }
 
     const eventDate = new Date(date);
     const formattedEventDate = format(eventDate, `EEEE do MMM`);
@@ -46,53 +75,53 @@ export default function ListItem({ item }) {
       p: 0,
     };
 
-    // console.log(flyerImage[0].image);
-    // const base64Image = encodeImage(flyerImage[0].image);
-    // console.log(base64Image);
-
     return (
-      <Card id={_id} sx={cardStyle}>
-        <CardContent sx={cardContentStyle}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              {flyerImage[0].image !== null && (
+      <Link href={eventURL}>
+        <Card id={_id} sx={cardStyle}>
+          <CardContent sx={cardContentStyle}>
+            <Grid container spacing={0}>
+              <Grid item xs={12}>
+                {/* Some Events do not have an image associated int eh database,
+              so they are replaced with a placeholder */}
                 <CardMedia
                   component="img"
                   height="194"
-                  image={`${flyerImage[0].image}`}
-                  alt={flyerImage[0].fileName}
+                  image={`${image !== null ? image : noPosterImg}`}
+                  alt={image !== null ? fileName : noPosterImg}
                 />
-              )}
+              </Grid>
             </Grid>
-          </Grid>
-        </CardContent>
-        <CardContent>
-          <Grid container spacing={2}>
-            <Grid item xs={7}>
-              <Typography variant="h4">{venue}</Typography>
+          </CardContent>
+          <CardContent>
+            <Grid container spacing={0}>
+              <Grid item xs={5}>
+                <Typography variant="h5">{venue}</Typography>
+              </Grid>
+              <Grid item xs={0}>
+                <Divider sx={{ ml: 1, mr: 1 }} orientation="vertical" />
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body1">{formattedEventDate}</Typography>
+                <Typography variant="body1">
+                  {formattedTimeStartDate} - {formattedTimeEndDate}
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid item xs={1}>
-              <Divider sx={{ ml: 1, mr: 1 }} orientation="vertical" />
+            <Grid container spacing={0} direction="column">
+              <Grid item xs={12}>
+                <Typography variant="h6">{eventName}</Typography>
+              </Grid>
+              <Grid item sx={12}>
+                <Typography variant="h6">Lineup</Typography>
+                <Typography variant="body1">{lineup}</Typography>
+              </Grid>
+              <Grid item sx={12}>
+                <Typography variant="body1">{eventURL}</Typography>
+              </Grid>
             </Grid>
-            <Grid item xs={4}>
-              <Typography variant="body1">{formattedEventDate}</Typography>
-              <Typography variant="body1">
-                {formattedTimeStartDate} - {formattedTimeEndDate}
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">{eventName}</Typography>
-            </Grid>
-            <Grid item sx={12}>
-              <Typography variant="h6">Lineup</Typography>
-              <Typography variant="body1">{lineup}</Typography>
-            </Grid>
-            <Grid item sx={12}>
-              <Typography variant="body1">{eventURL}</Typography>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </Link>
     );
   } catch (error) {
     console.log(error);
