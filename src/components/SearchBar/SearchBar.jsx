@@ -47,12 +47,7 @@ const inputStyle = {
   },
 };
 
-export default function SearchBar({
-  receivedLocationForProcessing,
-  updateNeighborhood,
-  myLocationSearch,
-  getAddressFromLatLong,
-}) {
+export default function SearchBar({ runMapWorker }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [gpsLocaterLoading, setGpsLocaterLoading] = useState(false);
   const [gpsLocaterTextResult, setGpsLocaterTextResult] = useState("");
@@ -64,13 +59,7 @@ export default function SearchBar({
     // change the text field of the search bar to loading
     await setGpsLocaterLoading(true);
     setGpsLocaterTextResult("Loading...");
-    // get location by asking for it in the browser, returns lat and long
-    const location = await myLocationSearch();
-    await receivedLocationForProcessing(location, dateValue);
-    const [{ place_name: address }, { text: neighborhood }] =
-      await getAddressFromLatLong(location);
-    await setGpsLocaterTextResult(neighborhood);
-    updateNeighborhood(neighborhood);
+    await runMapWorker();
     await setGpsLocaterLoading(false);
     document.querySelector("#search-bar").value = gpsLocaterTextResult;
   }
@@ -82,9 +71,13 @@ export default function SearchBar({
   }
 
   async function searchQueryButtonPressed(query) {
-    // expect to return the location of the query
-    const location = await getNewResultsFromSearch(query);
-    receivedLocationForProcessing(location, dateValue);
+    try {
+      // expect to return the location of the query
+      const { lat, long } = await getNewResultsFromSearch(query);
+      runMapWorker({ lat, long }, dateValue);
+    } catch (error) {
+      console.log(`${error} searchQueryButtonPressed Error`);
+    }
   }
 
   function handleDateChange() {

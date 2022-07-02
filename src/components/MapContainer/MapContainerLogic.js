@@ -41,4 +41,25 @@ async function getAddressFromLatLong(location) {
   }
 }
 
+async function receivedLocationForProcessing({ lat, long }, date) {
+  try {
+    if (lat == null) {
+      console.error("Location Not Found -- Handle Error");
+    } else if (lat !== "" && long !== "") {
+      //run logic to execute data
+      const data = await getMarkersFromLatLong({ lat, long }, date);
+      if (data == null) {
+        console.error("Fetching MongoDB Query Error");
+      } else {
+        console.log({ lat, long }, date);
+
+        return data;
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
 export { getMarkersFromLatLong, myLocationSearch, getAddressFromLatLong };

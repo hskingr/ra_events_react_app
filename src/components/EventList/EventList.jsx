@@ -1,27 +1,30 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import ListItem from "../ListItem/ListItem";
 import Grid from "@mui/material/Grid";
 import { Container } from "@mui/system";
-import {
-  Box,
-  Button,
-  Collapse,
-  SwipeableDrawer,
-  Typography,
-} from "@mui/material";
+import { Box, Button, SwipeableDrawer, Typography } from "@mui/material";
 import { Global } from "@emotion/react";
 import { styled } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
 
-export default function EventList({
-  listItems,
-  resultsLoaded,
-  neighborhood,
-  loadMoreEvents,
-  toggleDrawer,
-  openDrawer,
-}) {
-  // console.log(listItems);
+const EventList = forwardRef(function EventList(
+  { listItems, neighborhood, loadMoreEvents, toggleDrawer, openDrawer },
+  ref
+) {
+  console.log(`rerendering EventList`);
+  // const scrollRef = useRef([]);
+  // const testRef = useRef(null);
+  // console.log(
+  //   listItems.length,
+  //   listItems[0].eventResult.eventName,
+  //   listItems[listItems.length - 1].eventResult.eventName
+  // );
+
+  const storeRef = (element) => {
+    // console.log(element);
+    ref.current.push(element);
+    // console.log(ref);
+  };
 
   const Puller = styled(Box)(({ theme }) => ({
     width: 100,
@@ -58,7 +61,7 @@ export default function EventList({
     height: "100%",
   };
 
-  const drawerBleeding = "50";
+  const drawerBleeding = 50;
   const iOS =
     typeof navigator !== "undefined" &&
     /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -76,12 +79,13 @@ export default function EventList({
       <SwipeableDrawer
         anchor="bottom"
         open={openDrawer}
-        transitionDuration={10}
-        swipeAreaWidth={`${drawerBleeding}px`}
+        transitionDuration={500}
+        swipeAreaWidth={drawerBleeding}
         onClose={toggleDrawer(false)}
         onOpen={toggleDrawer(true)}
         disableSwipeToOpen={false}
         disableBackdropTransition={!iOS}
+        variant="temporary"
         disableDiscovery={iOS}
         ModalProps={{
           keepMounted: true,
@@ -96,6 +100,7 @@ export default function EventList({
             borderTopLeftRadius: 8,
             borderTopRightRadius: 8,
             visibility: "visible",
+
             right: 0,
             left: 0,
             backgroundColor: "rgb(255, 255, 255)",
@@ -109,12 +114,17 @@ export default function EventList({
         </Box>
         <Container sx={outerDiv}>
           <Container sx={innerDiv}>
-            <Grid sx={scrollDiv} container spacing={2}>
+            <Grid sx={scrollDiv} className="scrollDiv" container spacing={2}>
               {listItems.length > 0 ? (
                 listItems.map((item, index) => {
                   return (
                     <Grid item xs={12}>
-                      <ListItem item={item} key={index} index={index} />
+                      <ListItem
+                        item={item}
+                        key={index}
+                        index={index}
+                        ref={(ref) => storeRef(ref)}
+                      />
                     </Grid>
                   );
                 })
@@ -141,4 +151,6 @@ export default function EventList({
       </SwipeableDrawer>
     </Container>
   );
-}
+});
+
+export default EventList;

@@ -2,15 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { Map, Marker, MapProvider } from "react-map-gl";
 import SearchBar from "../SearchBar/SearchBar";
 import mapMarker from "./src/map-marker.png";
-import mapMarkerOne from "./src/numeric-1-circle.png";
-import mapMarkerTwo from "./src/numeric-2-circle.png";
-import mapMarkerThree from "./src/numeric-3-circle.png";
-import mapMarkerFour from "./src/numeric-4-circle.png";
-import mapMarkerFive from "./src/numeric-5-circle.png";
-import mapMarkerSix from "./src/numeric-6-circle.png";
-import mapMarkerSeven from "./src/numeric-7-circle.png";
-import mapMarkerEight from "./src/numeric-8-circle.png";
-import mapMarkerNine from "./src/numeric-9-circle.png";
 import Header from "../Header/Header";
 import raMarker from "./src/ra.png";
 import EventList from "../EventList/EventList";
@@ -24,37 +15,9 @@ import {
 import Container from "@mui/material/Container";
 import mapboxgl from "mapbox-gl";
 
-const mapStyle = {
-  width: "100vw",
-  height: "100vh",
-  padding: "0",
-  position: "absolute",
-  top: "0",
-  "& .mapContainer": {
-    height: "100%",
-  },
-};
-const searchBarStyle = { height: "10vh", position: "absolute", top: "80vh" };
-
 export default function MapContainer() {
-  useEffect(() => {
-    //Do an automatic request for location and update
-    async function getLoc() {
-      try {
-        const location = await myLocationSearch();
-        await receivedLocationForProcessing(location, new Date());
-        console.log(`date today: ${new Date()}`);
-        const [{ place_name: address }, { text: neighborhood }] =
-          await getAddressFromLatLong(location);
-        updateNeighborhood(neighborhood);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getLoc();
-  }, []);
-
-  // const [location, setLocation] = useState({ lat: "", long: "" });
+  // This ref is passed down the the EventsList in order to get the listItem elements
+  const scrollRef = useRef([]);
   const [{ requestedEvents, amountOfResults }, setResultData] = useState({
     requestedEvents: [],
     amountOfResults: 0,
@@ -62,29 +25,62 @@ export default function MapContainer() {
   const [neighborhood, setNeighborhood] = useState(``);
   const [executeSearchButtonPressed, setExecuteSearchButtonPressed] =
     useState(false);
-  const [resultsLoaded, setResultsLoaded] = useState(false);
-  const [longitude, setLng] = useState(-0.05318);
-  const [latitude, setLat] = useState(51.47707);
-  const [zoom, setZoom] = useState(10);
+  const [{ lat, long }, setLatLong] = useState({
+    long: -0.05318,
+    lat: 51.47707,
+  });
   const [resultsPageNumber, setResultsPageNumber] = useState(0);
   const [openDrawer, setOpenDrawer] = useState(false);
+
+  useEffect(() => {
+    //Do an automatic request for location and update
+    runMapWorker();
+  }, []);
+
+  const mapStyle = {
+    width: "100vw",
+    height: "100vh",
+    padding: "0",
+    position: "absolute",
+    top: "0",
+    "& .mapContainer": {
+      height: "100%",
+    },
+  };
+  const searchBarStyle = { height: "10vh", position: "absolute", top: "80vh" };
+
+  async function runMapWorker(
+    location = { lat: null, long: null },
+    date = new Date(),
+    pageNumber = 0
+  ) {
+    try {
+      if (location.lat === null && location.long === null) {
+        location = await myLocationSearch();
+      }
+      const { lat, long } = location;
+      console.log(lat, long);
+      const resultsFromApi = await getMarkersFromLatLong(
+        { lat, long },
+        date,
+        pageNumber
+      );
+      setResultData(resultsFromApi);
+      setLatLong({ lat, long });
+      setExecuteSearchButtonPressed(true);
+      console.log(`date today: ${new Date()}`);
+      const [{ place_name: address }, { text: neighborhood }] =
+        await getAddressFromLatLong({ lat, long });
+      updateNeighborhood(neighborhood);
+    } catch (error) {
+      console.log(`${error} \n runMapWorker Error`);
+    }
+  }
 
   const toggleDrawer = (newOpen) => () => {
     setOpenDrawer(newOpen);
     console.log(`changing drawer state`);
   };
-
-  const mapMarkerImgArr = [
-    mapMarkerOne,
-    mapMarkerTwo,
-    mapMarkerThree,
-    mapMarkerFour,
-    mapMarkerFive,
-    mapMarkerSix,
-    mapMarkerSeven,
-    mapMarkerEight,
-    mapMarkerNine,
-  ];
 
   function updateNeighborhood(data) {
     // data should be a string
@@ -96,79 +92,63 @@ export default function MapContainer() {
       console.log(`loading more events`);
       setResultsPageNumber(resultsPageNumber + 1);
       const data = await getMarkersFromLatLong(
-        { lat: latitude, long: longitude },
+        { lat, long },
         new Date(),
-        resultsPageNumber
+        resultsPageNumber + 1
       );
-      setResultData(data);
+      // console.log(data);
+      // console.log(data.requestedEvents);
+      const addedData = {
+        requestedEvents: [data.requestedEvents],
+        amountOfResults: data.amountOfResults,
+      };
+      console.log(addedData);
+      console.log(
+        addedData.requestedEvents.map(
+          (item) => `${item.eventResult.eventName} \n`
+        )
+      );
+      setResultData(addedData);
     } catch (error) {
       console.log(`${error} \n loadMoreEventsError`);
     }
   }
 
-  async function receivedLocationForProcessing(location, date) {
-    try {
-      if (location == null) {
-        console.error("Location Not Found -- Handle Error");
-      } else if (location.lat !== "" && location.long !== "") {
-        //run logic to execute data
-        const data = await getMarkersFromLatLong(location, date);
-        if (data == null) {
-          console.error("Fetching MongoDB Query Error");
-        } else {
-          console.log(location, date);
-          setLat(location.lat);
-          setLng(location.long);
-          setExecuteSearchButtonPressed(true);
-          setResultData(data);
-          if (data.amountOfResults > 0) {
-            setResultsLoaded(true);
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  //no longer working correctly
-  function highlightEvent(e, marker) {
-    // const element = document.getElementById(marker.eventResult._id);
-    // const elementLocation = element.getBoundingClientRect();
-    // const resultsList = document.querySelector("#resultsList");
-    // resultsList.scrollTo(elementLocation);
-    // element.style.color = "red";
+  function scrollToEventInDrawer(index) {
+    // opens the drawer
     setOpenDrawer(true);
-    console.log("clicked");
-    /* NEED TO USE REFS FOR EACH ELEMENT AND THEN REFERENCE THEM WITH A SCROLLTO METHOD */
+    console.log(index);
+    // scrolls the element into view using the index to identify the element
+    scrollRef.current[index].scrollIntoView();
   }
 
-  console.log(`Amount of Results: ${amountOfResults}`);
   return (
     <>
-      <Header resultsCount={amountOfResults} isResultsLoaded={resultsLoaded} />
+      <Header resultsCount={amountOfResults} />
       <MapProvider>
         <Map
           mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
           initialViewState={{
-            longitude,
-            latitude,
-            zoom,
+            longitude: long,
+            latitude: lat,
+            zoom: 10,
           }}
           style={mapStyle}
           mapStyle="mapbox://styles/mapbox/dark-v10"
         >
           {requestedEvents.map((marker, index) => {
-            const [longitude, latitude] =
+            const [long, lat] =
               marker.eventResult.venue_id.location.coordinates;
             return (
               <Marker
-                onClick={(e) => {
-                  highlightEvent(e, marker);
+                onClick={() => {
+                  // sends the index to identify the element in the ref
+                  scrollToEventInDrawer(index);
                 }}
+                index={index}
                 key={index}
-                longitude={longitude}
-                latitude={latitude}
+                longitude={long}
+                latitude={lat}
                 anchor="bottom"
                 icon-allow-overlap={true}
               >
@@ -178,34 +158,29 @@ export default function MapContainer() {
             );
           })}
           {executeSearchButtonPressed && (
-            <Marker longitude={longitude} latitude={latitude} anchor="bottom">
+            <Marker longitude={long} latitude={lat} anchor="bottom">
               <img alt="my-location" src={mapMarker} />
             </Marker>
           )}
           {executeSearchButtonPressed && (
             <ChangeBounds
-              longitude={longitude}
-              latitude={latitude}
+              longitude={long}
+              latitude={lat}
               resultData={requestedEvents}
             />
           )}
         </Map>
       </MapProvider>
-      <Container justifyContent="center" sx={searchBarStyle}>
-        <SearchBar
-          myLocationSearch={myLocationSearch}
-          receivedLocationForProcessing={receivedLocationForProcessing}
-          updateNeighborhood={updateNeighborhood}
-          getAddressFromLatLong={getAddressFromLatLong}
-        />
+      <Container jusitfycontent="center" sx={searchBarStyle}>
+        <SearchBar runMapWorker={runMapWorker} />
       </Container>
       <EventList
         listItems={requestedEvents}
-        resultsLoaded={resultsLoaded}
         neighborhood={neighborhood}
         loadMoreEvents={loadMoreEvents}
         toggleDrawer={toggleDrawer}
         openDrawer={openDrawer}
+        ref={scrollRef}
       />
     </>
   );
