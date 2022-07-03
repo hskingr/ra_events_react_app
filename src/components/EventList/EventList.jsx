@@ -6,9 +6,17 @@ import { Box, Button, SwipeableDrawer, Typography } from "@mui/material";
 import { Global } from "@emotion/react";
 import { styled } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
+import { useEffect } from "react";
 
 const EventList = forwardRef(function EventList(
-  { listItems, neighborhood, loadMoreEvents, toggleDrawer, openDrawer },
+  {
+    listItems,
+    neighborhood,
+    loadMoreEvents,
+    toggleDrawer,
+    openDrawer,
+    amountOfResults,
+  },
   ref
 ) {
   console.log(`rerendering EventList`);
@@ -20,9 +28,21 @@ const EventList = forwardRef(function EventList(
   //   listItems[listItems.length - 1].eventResult.eventName
   // );
 
+  // useEffect(() => {
+  //   console.log("running events list once");
+  //   ref.current = [];
+  // }, [loadMoreEvents]);
+
   const storeRef = (element) => {
     // console.log(element);
-    ref.current.push(element);
+    if (element !== null) {
+      // console.log(element.href);
+      const hrefs = ref.current.map((item) => item.href);
+      const foundDuplicate = hrefs.includes(element.href);
+      console.log(foundDuplicate);
+      foundDuplicate !== true && ref.current.push(element);
+    }
+
     // console.log(ref);
   };
 
@@ -117,6 +137,7 @@ const EventList = forwardRef(function EventList(
             <Grid sx={scrollDiv} className="scrollDiv" container spacing={2}>
               {listItems.length > 0 ? (
                 listItems.map((item, index) => {
+                  // console.log(item);
                   return (
                     <Grid item xs={12}>
                       <ListItem
@@ -141,6 +162,7 @@ const EventList = forwardRef(function EventList(
                   }}
                   fullWidth={true}
                   variant="contained"
+                  disabled={amountOfResults === listItems.length ? true : false}
                 >
                   Load More
                 </Button>

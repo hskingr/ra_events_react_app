@@ -14,9 +14,12 @@ import {
 } from "./MapContainerLogic";
 import Container from "@mui/material/Container";
 import mapboxgl from "mapbox-gl";
+import useRenderCounter from "../useRenderCounter/useRenderCounter";
+import { Grid } from "@mui/material";
 
 export default function MapContainer() {
   // This ref is passed down the the EventsList in order to get the listItem elements
+  useRenderCounter(`MapContainer`);
   const scrollRef = useRef([]);
   const [{ requestedEvents, amountOfResults }, setResultData] = useState({
     requestedEvents: [],
@@ -33,6 +36,8 @@ export default function MapContainer() {
   const [openDrawer, setOpenDrawer] = useState(false);
 
   useEffect(() => {
+    console.log(`Running This On Load Only Once`);
+
     //Do an automatic request for location and update
     runMapWorker();
   }, []);
@@ -47,7 +52,11 @@ export default function MapContainer() {
       height: "100%",
     },
   };
-  const searchBarStyle = { height: "10vh", position: "absolute", top: "80vh" };
+  const searchBarStyle = {
+    height: "40px",
+    position: "absolute",
+    bottom: "100px",
+  };
 
   async function runMapWorker(
     location = { lat: null, long: null },
@@ -59,19 +68,18 @@ export default function MapContainer() {
         location = await myLocationSearch();
       }
       const { lat, long } = location;
-      console.log(lat, long);
       const resultsFromApi = await getMarkersFromLatLong(
         { lat, long },
         date,
         pageNumber
       );
+      // console.log(`date today: ${new Date()}`);
+      const [{ place_name: address }, { text: neighborhood }] =
+        await getAddressFromLatLong({ lat, long });
+      setNeighborhood(neighborhood);
       setResultData(resultsFromApi);
       setLatLong({ lat, long });
       setExecuteSearchButtonPressed(true);
-      console.log(`date today: ${new Date()}`);
-      const [{ place_name: address }, { text: neighborhood }] =
-        await getAddressFromLatLong({ lat, long });
-      updateNeighborhood(neighborhood);
     } catch (error) {
       console.log(`${error} \n runMapWorker Error`);
     }
@@ -82,11 +90,8 @@ export default function MapContainer() {
     console.log(`changing drawer state`);
   };
 
-  function updateNeighborhood(data) {
-    // data should be a string
-    setNeighborhood(data);
-  }
-
+  // EventList updates but the refs do not go to the right place
+  // need to fix
   async function loadMoreEvents() {
     try {
       console.log(`loading more events`);
@@ -99,15 +104,13 @@ export default function MapContainer() {
       // console.log(data);
       // console.log(data.requestedEvents);
       const addedData = {
-        requestedEvents: [data.requestedEvents],
+        requestedEvents: data.requestedEvents,
         amountOfResults: data.amountOfResults,
       };
-      console.log(addedData);
-      console.log(
-        addedData.requestedEvents.map(
-          (item) => `${item.eventResult.eventName} \n`
-        )
-      );
+      // console.log(data);
+      // console.log(
+      //   addedData.requestedEvents.map((item) => `${item.eventResult.eventName}`)
+      // );
       setResultData(addedData);
     } catch (error) {
       console.log(`${error} \n loadMoreEventsError`);
@@ -121,6 +124,8 @@ export default function MapContainer() {
     // scrolls the element into view using the index to identify the element
     scrollRef.current[index].scrollIntoView();
   }
+
+  console.log(scrollRef);
 
   return (
     <>
@@ -171,11 +176,23 @@ export default function MapContainer() {
           )}
         </Map>
       </MapProvider>
-      <Container jusitfycontent="center" sx={searchBarStyle}>
-        <SearchBar runMapWorker={runMapWorker} />
-      </Container>
+
+      <Grid
+        container
+        spacing={0}
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        sx={searchBarStyle}
+      >
+        <Grid item xs={12} sx={{ ml: 5, mr: 5 }}>
+          <SearchBar runMapWorker={runMapWorker} />
+        </Grid>
+      </Grid>
+
       <EventList
         listItems={requestedEvents}
+        amountOfResults={amountOfResults}
         neighborhood={neighborhood}
         loadMoreEvents={loadMoreEvents}
         toggleDrawer={toggleDrawer}

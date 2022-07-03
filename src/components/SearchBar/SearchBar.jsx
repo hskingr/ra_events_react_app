@@ -104,7 +104,7 @@ export default function SearchBar({ runMapWorker }) {
           )}
         />
       </LocalizationProvider> */}
-      <FormControl variant="outlined" fullWidth={true} sx={formControlStyle}>
+      <FormControl variant="outlined" sx={formControlStyle}>
         <Input
           id="search-bar"
           className="text"
@@ -113,7 +113,6 @@ export default function SearchBar({ runMapWorker }) {
           defaultValue={gpsLocaterTextResult}
           disableUnderline={true}
           size="normal"
-          fullWidth={true}
           sx={inputStyle}
           onKeyDown={(event) => checkIfEnterIsPressed(event, searchQuery)}
           startAdornment={
