@@ -13,12 +13,10 @@ import {
   getAddressFromLatLong,
 } from "./MapContainerLogic";
 import Container from "@mui/material/Container";
-import mapboxgl from "mapbox-gl";
 import useRenderCounter from "../useRenderCounter/useRenderCounter";
 import { Grid } from "@mui/material";
 
 export default function MapContainer() {
-  // This ref is passed down the the EventsList in order to get the listItem elements
   useRenderCounter(`MapContainer`);
   const scrollRef = useRef([]);
   const [{ requestedEvents, amountOfResults }, setResultData] = useState({
@@ -162,11 +160,11 @@ export default function MapContainer() {
               </Marker>
             );
           })}
-          {executeSearchButtonPressed && (
+          {/* {executeSearchButtonPressed && (
             <Marker longitude={long} latitude={lat} anchor="bottom">
               <img alt="my-location" src={mapMarker} />
             </Marker>
-          )}
+          )} */}
           {executeSearchButtonPressed && (
             <ChangeBounds
               longitude={long}

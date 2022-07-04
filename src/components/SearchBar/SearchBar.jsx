@@ -61,12 +61,14 @@ export default function SearchBar({ runMapWorker }) {
     setGpsLocaterTextResult("Loading...");
     await runMapWorker();
     await setGpsLocaterLoading(false);
+    setGpsLocaterTextResult("");
     document.querySelector("#search-bar").value = gpsLocaterTextResult;
   }
 
   function checkIfEnterIsPressed(event, query) {
     if (event.key === "Enter") {
       searchQueryButtonPressed(query);
+      event.target.blur();
     }
   }
 

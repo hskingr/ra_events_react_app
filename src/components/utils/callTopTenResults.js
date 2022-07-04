@@ -8,9 +8,9 @@ export default async function callTopTenResults(
   try {
     let connectionString = "";
     if (process.env.NODE_ENV === "development") {
-      connectionString = `http://localhost:8030/api/getResults`;
+      connectionString = `http://100.117.215.6:8030/api/getResults`;
     } else {
-      connectionString = `http://127.0.0.1:8030/api/getResults`;
+      connectionString = `http://100.117.215.6:8030/api/getResults`;
     }
     const result = await axios.post(connectionString, {
       lat,
