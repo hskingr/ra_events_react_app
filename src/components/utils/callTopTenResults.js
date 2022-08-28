@@ -6,11 +6,12 @@ export default async function callTopTenResults(
   pageNumber = 0
 ) {
   try {
+    console.log(lat);
     let connectionString = "";
     if (process.env.NODE_ENV === "development") {
-      connectionString = `http://100.117.215.6:8030/api/getResults`;
+      connectionString = process.env.REACT_APP_DOCKER_API_CONNECTION_STRING;
     } else {
-      connectionString = `http://100.117.215.6:8030/api/getResults`;
+      connectionString = `https://residentmapper.net:8030/api/getResults`;
     }
     const result = await axios.post(connectionString, {
       lat,

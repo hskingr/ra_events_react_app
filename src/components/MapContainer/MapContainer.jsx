@@ -65,6 +65,7 @@ export default function MapContainer() {
       if (location.lat === null && location.long === null) {
         location = await myLocationSearch();
       }
+
       const { lat, long } = location;
       const resultsFromApi = await getMarkersFromLatLong(
         { lat, long },

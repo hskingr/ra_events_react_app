@@ -24,6 +24,7 @@ async function myLocationSearch() {
       lat: position.coords.latitude,
       long: position.coords.longitude,
     };
+
     return location;
   } catch (error) {
     console.log(error);
