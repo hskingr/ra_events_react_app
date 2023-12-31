@@ -36,6 +36,7 @@ async function getAddressFromLatLong(location) {
     const result = await axios.get(
       `https://api.mapbox.com/geocoding/v5/mapbox.places/${location.long},${location.lat}.json?country=gb&proximity=ip&language=en&access_token=${process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}`
     );
+    console.log(result);
     return result.data.features;
   } catch (error) {
     console.log(error);
