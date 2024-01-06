@@ -6,14 +6,14 @@ services:
       context: .
       args:
         - REACT_APP_MAPBOX_ACCESS_TOKEN
-    image: f4zphp27xi2s27yn/my_repo_topor:ra_events_react_app_dev
+    image: f4zphp27xi2s27yn/my_repo_topor:resident_mapper_react_app_dev
     volumes:
       - ${PWD}/.nginx/nginx.conf:/etc/nginx/nginx.conf
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.resident_mapper_react_app.rule=Host(`dev.residentmapper.net`)"
-      - "traefik.http.routers.resident_mapper_react_app.entrypoints=websecure"
-      - "traefik.http.routers.resident_mapper_react_app.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.resident_mapper_react_app_dev.rule=Host(`dev.residentmapper.net`)"
+      - "traefik.http.routers.resident_mapper_react_app_dev.entrypoints=websecure"
+      - "traefik.http.routers.resident_mapper_react_app_dev.tls.certresolver=letsencrypt"
 networks:
   default:
     external: true

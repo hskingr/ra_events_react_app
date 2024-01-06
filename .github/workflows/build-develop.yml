@@ -25,6 +25,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: f4zphp27xi2s27yn/my_repo_topor:ra_events_react_app_dev
+          tags: f4zphp27xi2s27yn/my_repo_topor:resident_mapper_react_app_dev
           cache-from: type=registry,ref=user/app:latest
           cache-to: type=inline
