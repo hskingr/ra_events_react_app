@@ -30,3 +30,4 @@ jobs:
           tags: f4zphp27xi2s27yn/my_repo_topor:resident_mapper_react_app_prod
           cache-from: type=registry,ref=user/app:latest
           cache-to: type=inline
+          build-args: REACT_APP_MAPBOX_ACCESS_TOKEN=$REACT_APP_MAPBOX_ACCESS_TOKEN
