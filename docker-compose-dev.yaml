@@ -1,20 +1,5 @@
 version: '3'
 services:
-  # resident_mapper_api:
-  #   container_name: "resident_mapper_api"
-  #   build: .
-  #   command: "npm run prod"
-  #   environment:
-  #     - NODE_ENV=production
-  #     - MONGODB_CONNECTION_STRING_PROD=mongodb://root:rootpassword@mongodb/ra_data?authSource=admin
-  #     - TZ=Europe/London
-  #     - PORT=80
-  #   image: f4zphp27xi2s27yn/my_repo_topor:ra_events_api
-  #   ports:
-  #     - 100.100.78.77:8030:80
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.resident_mapper_api.rule=Host(`rm.libraryoftype.xyz`)"
   resident_mapper_react_app_dev:
     container_name: resident_mapper_react_app_dev
     build:
