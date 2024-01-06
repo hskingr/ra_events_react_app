@@ -26,3 +26,5 @@ jobs:
           context: .
           push: true
           tags: f4zphp27xi2s27yn/my_repo_topor:ra_events_react_app_prod
+          cache-from: type=registry,ref=user/app:latest
+          cache-to: type=inline
