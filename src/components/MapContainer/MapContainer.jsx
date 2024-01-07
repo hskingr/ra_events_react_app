@@ -125,6 +125,9 @@ export default function MapContainer() {
   }
 
   console.log(scrollRef);
+  console.log(`TEMP LOG START`);
+  console.log(process.env.REACT_APP_MAPBOX_ACCESS_TOKEN);
+  console.log(`TEMP LOG END`);
 
   return (
     <>
