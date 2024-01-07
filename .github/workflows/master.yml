@@ -19,8 +19,8 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
       - name: connect, pull and build
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git pull && git checkout ${{ secrets.MAIN_BRANCH }} && docker compose -f "docker-compose-prod.yaml" build"
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git pull && git checkout master ${{ secrets.MAIN_BRANCH }} && docker compose -f "docker-compose-prod.yaml" build && && docker compose -f "docker-compose-prod.yaml" push""
       - name: connect and run
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git pull && git checkout ${{ secrets.MAIN_BRANCH }} && docker compose -f "docker-compose-prod.yaml" up -d"
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git pull && git checkout master ${{ secrets.MAIN_BRANCH }} && docker compose -f "docker-compose-prod.yaml" up -d"
       - name: cleanup
         run: rm -rf ~/.ssh

@@ -4,9 +4,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 function App() {
   console.log(process.env.NODE_ENV);
-  console.log(`TEMP LOG START`);
-  console.log(process.env.REACT_APP_MAPBOX_ACCESS_TOKEN);
-  console.log(`TEMP LOG END`);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
