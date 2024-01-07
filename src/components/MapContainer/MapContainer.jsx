@@ -140,6 +140,14 @@ export default function MapContainer() {
           style={mapStyle}
           mapStyle="mapbox://styles/mapbox/dark-v10"
         >
+          <Marker
+            index={900}
+            key={900}
+            longitude={long}
+            latitude={lat}
+            anchor="bottom"
+            icon-allow-overlap={true}
+          ></Marker>
           {requestedEvents.map((marker, index) => {
             const [long, lat] =
               marker.eventResult.venue_id.location.coordinates;
