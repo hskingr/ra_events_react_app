@@ -17,6 +17,10 @@ import useRenderCounter from "../useRenderCounter/useRenderCounter";
 import { Grid } from "@mui/material";
 
 export default function MapContainer() {
+  console.log(`TEMP LOG START`);
+  console.log(process.env.REACT_APP_MAPBOX_ACCESS_TOKEN);
+  console.log(`TEMP LOG END`);
+
   useRenderCounter(`MapContainer`);
   const scrollRef = useRef([]);
   const [{ requestedEvents, amountOfResults }, setResultData] = useState({
@@ -125,9 +129,6 @@ export default function MapContainer() {
   }
 
   console.log(scrollRef);
-  console.log(`TEMP LOG START`);
-  console.log(process.env.REACT_APP_MAPBOX_ACCESS_TOKEN);
-  console.log(`TEMP LOG END`);
 
   return (
     <>
