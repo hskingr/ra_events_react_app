@@ -1,17 +1,17 @@
 version: "3"
 services:
-  ra_events_react_app:
-    container_name: ra_events_react_app
+  resident_mapper_react_app_dev:
+    container_name: resident_mapper_react_app_dev
     build:
       context: .
       args:
         - REACT_APP_MAPBOX_ACCESS_TOKEN
-    image: f4zphp27xi2s27yn/my_repo_topor:ra_events_react_app
+    image: f4zphp27xi2s27yn/my_repo_topor:resident_mapper_react_app_dev
     ports:
-      - 3001:80
+      - 80:80
     volumes:
-      - ${PWD}/.nginx-prod/nginx.conf:/etc/nginx/nginx.conf
+      - ./.nginx/nginx.conf:/etc/nginx/nginx.conf
 networks:
   default:
-    name: ra_events_grabber_network
+    name: myNetwork
     external: true
