@@ -1,10 +1,9 @@
 name: master
 
 on:
-  workflow_run:
-    workflows: ["CI build-master"]
-    types:
-      - completed
+  push:
+    branches:
+      - "master"
 
 jobs:
   run_pull:
@@ -19,7 +18,9 @@ jobs:
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
-      - name: connect and pull
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git pull && git checkout ${{ secrets.MAIN_BRANCH }} && docker compose -f "docker-compose-prod.yaml" up -d && exit"
+      - name: connect, pull and build
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git pull && git checkout ${{ secrets.MAIN_BRANCH }} && docker compose -f "docker-compose-prod.yaml" build"
+      - name: connect and run
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git pull && git checkout ${{ secrets.MAIN_BRANCH }} && docker compose -f "docker-compose-prod.yaml" up -d"
       - name: cleanup
         run: rm -rf ~/.ssh
