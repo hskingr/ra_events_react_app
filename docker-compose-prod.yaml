@@ -14,6 +14,8 @@ services:
       - "traefik.http.routers.resident_mapper_react_app_prod.rule=Host(`residentmapper.net`)"
       - "traefik.http.routers.resident_mapper_react_app_prod.entrypoints=websecure"
       - "traefik.http.routers.resident_mapper_react_app_prod.tls.certresolver=letsencrypt"
+    environment:
+      - REACT_APP_MAPBOX_ACCESS_TOKEN
 networks:
   default:
     external: true
