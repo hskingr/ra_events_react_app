@@ -10,7 +10,6 @@ jobs:
     branches:
       - "develop"
 
-
     steps:
       - name: install ssh keys
         # check this thread to understand why its needed:
