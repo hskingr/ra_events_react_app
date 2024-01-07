@@ -22,6 +22,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Check Mapbox Access Token
         run: echo ${{ secrets.REACT_APP_MAPBOX_ACCESS_TOKEN }}
+      - name: Create env file
+        run: echo REACT_APP_MAPBOX_ACCESS_TOKEN=${{ secrets.REACT_APP_MAPBOX_ACCESS_TOKEN }} > .env
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
