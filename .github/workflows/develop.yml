@@ -6,9 +6,9 @@ on:
       - "develop"
 
 jobs:
-  push:
-    branches:
-      - "develop"
+  run_pull:
+    name: run pull
+    runs-on: ubuntu-latest
 
     steps:
       - name: install ssh keys
