@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 function App() {
   console.log(process.env.NODE_ENV);
+  console.log(`LETS GOOOO`);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
