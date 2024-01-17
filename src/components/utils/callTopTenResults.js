@@ -11,6 +11,7 @@ export default async function callTopTenResults(
     if (process.env.NODE_ENV === "development") {
       connectionString = process.env.REACT_APP_API_ENDPOINT_URL;
     } else {
+      // Production
       connectionString = `https://rm.libraryoftype.xyz/api/v1/getResults`;
     }
     console.log(connectionString);
