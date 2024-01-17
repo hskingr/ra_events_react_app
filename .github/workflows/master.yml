@@ -21,6 +21,6 @@ jobs:
       - name: connect, pull and build
         run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git pull && git checkout ${{ secrets.MAIN_BRANCH }} && docker compose -f "docker-compose-prod.yaml" build && docker compose -f "docker-compose-prod.yaml" push"
       - name: connect and run
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git pull && git checkout ${{ secrets.MAIN_BRANCH }} && docker compose -f "docker-compose-prod.yaml" up -d"
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git pull && git checkout ${{ secrets.MAIN_BRANCH }} && docker compose -f "docker-compose-prod.yaml" -p resident_mapper_react_app_prod up -d"
       - name: cleanup
         run: rm -rf ~/.ssh
