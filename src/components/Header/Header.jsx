@@ -2,8 +2,13 @@ import { Chip, Container, Grid, Paper, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 import Sun from "@mui/icons-material/LightMode";
+import SearchHereButton from "../SearchHereButton/SearchHereButton";
 
-export default function Header({ resultsCount, isResultsLoaded }) {
+export default function Header({
+  resultsCount,
+  isResultsLoaded,
+  addSearchHereButton,
+}) {
   const resultTest = `${resultsCount} Events Found`;
 
   const headerStyle = {
@@ -20,6 +25,13 @@ export default function Header({ resultsCount, isResultsLoaded }) {
     backgroundColor: "rgb(255, 255, 255)",
     borderRadius: "20px",
   };
+
+  const [mapMoved, setMapMoved] = useState(false);
+
+  function addSearchHereButton(e) {
+    console.log(e);
+    setMapMoved(true);
+  }
 
   return (
     <Container sx={headerStyle}>
@@ -49,6 +61,7 @@ export default function Header({ resultsCount, isResultsLoaded }) {
           label={resultTest}
         />
       </Stack>
+      {mapMoved && <SearchHereButton />}
     </Container>
   );
 }

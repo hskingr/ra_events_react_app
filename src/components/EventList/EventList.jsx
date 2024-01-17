@@ -81,7 +81,7 @@ const EventList = forwardRef(function EventList(
     height: "100%",
   };
 
-  const drawerBleeding = 50;
+  const drawerBleeding = 60;
   const iOS =
     typeof navigator !== "undefined" &&
     /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -120,7 +120,6 @@ const EventList = forwardRef(function EventList(
             borderTopLeftRadius: 8,
             borderTopRightRadius: 8,
             visibility: "visible",
-
             right: 0,
             left: 0,
             backgroundColor: "rgb(255, 255, 255)",

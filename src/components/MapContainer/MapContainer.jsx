@@ -1,23 +1,27 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Map, Marker, MapProvider } from "react-map-gl";
-import SearchBar from "../SearchBar/SearchBar";
-import mapMarker from "./src/map-marker.png";
-import Header from "../Header/Header";
-import raMarker from "./src/ra.png";
+
 import EventList from "../EventList/EventList";
 import "mapbox-gl/dist/mapbox-gl.css";
-import ChangeBounds from "./ChangeBounds";
 import {
   getMarkersFromLatLong,
   myLocationSearch,
   getAddressFromLatLong,
 } from "./MapContainerLogic";
-import Container from "@mui/material/Container";
+import Container from "../Container/Container";
 import useRenderCounter from "../useRenderCounter/useRenderCounter";
-import { Grid } from "@mui/material";
+import MyMap from "./MyMap"; // Import the new component
+import SearchHereButton from "../SearchHereButton/SearchHereButton";
 
 export default function MapContainer() {
   useRenderCounter(`MapContainer`);
+
+  const [onDragEnd, setOnDragEnd] = useState(false);
+
+  const showSearchHereButton = (e) => {
+    setOnDragEnd(true);
+  };
+
   const scrollRef = useRef([]);
   const [{ requestedEvents, amountOfResults }, setResultData] = useState({
     requestedEvents: [],
@@ -30,6 +34,7 @@ export default function MapContainer() {
     long: -0.05318,
     lat: 51.47707,
   });
+
   const [resultsPageNumber, setResultsPageNumber] = useState(0);
   const [openDrawer, setOpenDrawer] = useState(false);
 
@@ -50,11 +55,6 @@ export default function MapContainer() {
       height: "100%",
     },
   };
-  const searchBarStyle = {
-    height: "40px",
-    position: "absolute",
-    bottom: "100px",
-  };
 
   async function runMapWorker(
     location = { lat: null, long: null },
@@ -62,6 +62,8 @@ export default function MapContainer() {
     pageNumber = 0
   ) {
     try {
+      setOnDragEnd(false);
+      console.log(`running map worker`);
       if (location.lat === null && location.long === null) {
         location = await myLocationSearch();
       }
@@ -128,67 +130,6 @@ export default function MapContainer() {
 
   return (
     <>
-      <Header resultsCount={amountOfResults} />
-      <MapProvider>
-        <Map
-          mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
-          initialViewState={{
-            longitude: long,
-            latitude: lat,
-            zoom: 10,
-          }}
-          style={mapStyle}
-          mapStyle="mapbox://styles/mapbox/dark-v10"
-        >
-          {requestedEvents.map((marker, index) => {
-            const [long, lat] =
-              marker.eventResult.venue_id.location.coordinates;
-            return (
-              <Marker
-                onClick={() => {
-                  // sends the index to identify the element in the ref
-                  scrollToEventInDrawer(index);
-                }}
-                index={index}
-                key={index}
-                longitude={long}
-                latitude={lat}
-                anchor="bottom"
-                icon-allow-overlap={true}
-              >
-                {" "}
-                <img alt="map-marker" src={raMarker} />
-              </Marker>
-            );
-          })}
-          {/* {executeSearchButtonPressed && (
-            <Marker longitude={long} latitude={lat} anchor="bottom">
-              <img alt="my-location" src={mapMarker} />
-            </Marker>
-          )} */}
-          {executeSearchButtonPressed && (
-            <ChangeBounds
-              longitude={long}
-              latitude={lat}
-              resultData={requestedEvents}
-            />
-          )}
-        </Map>
-      </MapProvider>
-
-      <Grid
-        container
-        spacing={0}
-        direction="row"
-        alignItems="center"
-        justifyContent="center"
-        sx={searchBarStyle}
-      >
-        <Grid item xs={12} sx={{ ml: 5, mr: 5 }}>
-          <SearchBar runMapWorker={runMapWorker} />
-        </Grid>
-      </Grid>
-
       <EventList
         listItems={requestedEvents}
         amountOfResults={amountOfResults}
@@ -198,6 +139,25 @@ export default function MapContainer() {
         openDrawer={openDrawer}
         ref={scrollRef}
       />
+      <Container
+        amountOfResults={amountOfResults}
+        runMapWorker={runMapWorker}
+      />
+
+      <MapProvider>
+        <MyMap
+          long={long}
+          lat={lat}
+          setLatLong={setLatLong}
+          mapStyle={mapStyle}
+          requestedEvents={requestedEvents}
+          executeSearchButtonPressed={executeSearchButtonPressed}
+          scrollToEventInDrawer={scrollToEventInDrawer}
+          showSearchHereButton={showSearchHereButton}
+          onDragEnd={onDragEnd}
+          runMapWorker={runMapWorker}
+        />
+      </MapProvider>
     </>
   );
 }

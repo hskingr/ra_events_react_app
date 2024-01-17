@@ -10,7 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
 import InputAdornment from "@mui/material/InputAdornment";
-import { Input } from "@mui/material";
+import { Container, Input } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 
 import { Box } from "@mui/system";
@@ -86,9 +86,17 @@ export default function SearchBar({ runMapWorker }) {
     console.log("date changed");
   }
 
+  const searchBarStyle = {
+    height: "40px",
+    position: "absolute",
+    bottom: "100px",
+    zIndex: "500",
+  };
+
   return (
-    <InputWrapper>
-      {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <Container sx={searchBarStyle}>
+      <InputWrapper>
+        {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
         <DatePicker
           inputFormat="MM/dd/yyyy"
           value={dateValue}
@@ -106,48 +114,49 @@ export default function SearchBar({ runMapWorker }) {
           )}
         />
       </LocalizationProvider> */}
-      <FormControl variant="outlined" sx={formControlStyle}>
-        <Input
-          id="search-bar"
-          className="text"
-          onInput={(event) => setSearchQuery(event.target.value)}
-          placeholder={gpsLocaterLoading === true ? "Loading..." : null}
-          defaultValue={gpsLocaterTextResult}
-          disableUnderline={true}
-          size="normal"
-          sx={inputStyle}
-          onKeyDown={(event) => checkIfEnterIsPressed(event, searchQuery)}
-          startAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                color="secondary"
-                sx={{ m: 0, p: 0 }}
-                onClick={() => searchQueryButtonPressed(searchQuery)}
-              >
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          }
-        />
-      </FormControl>
-      <IconButton
-        color="secondary"
-        sx={{
-          // width: "10%",
-          ml: 1,
-          "&": {
-            border: "1.5px solid rgba(0, 0, 0, 0)",
-            backgroundColor: "white",
-            borderRadius: "10px",
-          },
-          "&:hover": {
-            backgroundColor: "white",
-          },
-        }}
-        onClick={() => myLocationButtonPressed()}
-      >
-        <MyLocationIcon />
-      </IconButton>
-    </InputWrapper>
+        <FormControl variant="outlined" sx={formControlStyle}>
+          <Input
+            id="search-bar"
+            className="text"
+            onInput={(event) => setSearchQuery(event.target.value)}
+            placeholder={gpsLocaterLoading === true ? "Loading..." : null}
+            defaultValue={gpsLocaterTextResult}
+            disableUnderline={true}
+            size="normal"
+            sx={inputStyle}
+            onKeyDown={(event) => checkIfEnterIsPressed(event, searchQuery)}
+            startAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  color="secondary"
+                  sx={{ m: 0, p: 0 }}
+                  onClick={() => searchQueryButtonPressed(searchQuery)}
+                >
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            }
+          />
+        </FormControl>
+        <IconButton
+          color="secondary"
+          sx={{
+            // width: "10%",
+            ml: 1,
+            "&": {
+              border: "1.5px solid rgba(0, 0, 0, 0)",
+              backgroundColor: "white",
+              borderRadius: "10px",
+            },
+            "&:hover": {
+              backgroundColor: "white",
+            },
+          }}
+          onClick={() => myLocationButtonPressed()}
+        >
+          <MyLocationIcon />
+        </IconButton>
+      </InputWrapper>
+    </Container>
   );
 }
