@@ -19,7 +19,7 @@ const EventList = forwardRef(function EventList(
   },
   ref
 ) {
-  console.log(`rerendering EventList`);
+  // console.log(`rerendering EventList`);
   // const scrollRef = useRef([]);
   // const testRef = useRef(null);
   // console.log(
@@ -39,7 +39,7 @@ const EventList = forwardRef(function EventList(
       // console.log(element.href);
       const hrefs = ref.current.map((item) => item.href);
       const foundDuplicate = hrefs.includes(element.href);
-      console.log(foundDuplicate);
+      // console.log(foundDuplicate);
       foundDuplicate !== true && ref.current.push(element);
     }
 

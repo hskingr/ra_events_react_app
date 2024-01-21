@@ -5,7 +5,12 @@ import { Grid } from "@mui/material";
 import SearchBar from "../SearchBar/SearchBar";
 import { Box } from "@mui/system";
 
-function Container({ amountOfResults, runMapWorker }) {
+function Container({
+  amountOfResults,
+  setNewLatLong,
+  setClickedSearchHere,
+  myLocationSearch,
+}) {
   return (
     <>
       <Header resultsCount={amountOfResults} />
@@ -15,7 +20,10 @@ function Container({ amountOfResults, runMapWorker }) {
         left="50%"
         transform="translateX(-50%)"
       ></Box>
-      <SearchBar runMapWorker={runMapWorker} />
+      <SearchBar
+        setNewLatLong={setNewLatLong}
+        setClickedSearchHere={setClickedSearchHere}
+      />
     </>
   );
 }

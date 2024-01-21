@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import styled from "styled-components";
 import { styled } from "@mui/material/styles";
-import { getNewResultsFromSearch, myLocationSearch } from "./SearchBarLogic";
+import { getNewResultsFromSearch } from "./SearchBarLogic";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { InputUnstyled } from "@mui/base";
@@ -13,6 +13,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { Container, Input } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 
+import { myLocationSearch } from "../MapContainer/MapContainerLogic";
 import { Box } from "@mui/system";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 
@@ -47,7 +48,7 @@ const inputStyle = {
   },
 };
 
-export default function SearchBar({ runMapWorker }) {
+export default function SearchBar({ setNewLatLong, setClickedSearchHere }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [gpsLocaterLoading, setGpsLocaterLoading] = useState(false);
   const [gpsLocaterTextResult, setGpsLocaterTextResult] = useState("");
@@ -59,7 +60,10 @@ export default function SearchBar({ runMapWorker }) {
     // change the text field of the search bar to loading
     await setGpsLocaterLoading(true);
     setGpsLocaterTextResult("Loading...");
-    await runMapWorker();
+    const location = await myLocationSearch();
+    setNewLatLong(location);
+    setClickedSearchHere(true);
+
     await setGpsLocaterLoading(false);
     setGpsLocaterTextResult("");
     document.querySelector("#search-bar").value = gpsLocaterTextResult;
@@ -76,7 +80,8 @@ export default function SearchBar({ runMapWorker }) {
     try {
       // expect to return the location of the query
       const { lat, long } = await getNewResultsFromSearch(query);
-      runMapWorker({ lat, long }, dateValue);
+      setNewLatLong({ lat, long });
+      setClickedSearchHere(true);
     } catch (error) {
       console.log(`${error} searchQueryButtonPressed Error`);
     }

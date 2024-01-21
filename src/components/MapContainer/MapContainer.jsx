@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Map, Marker, MapProvider } from "react-map-gl";
+import Box from "@mui/material/Box"; // Add this import
+import CircularProgress from "@mui/material/CircularProgress"; // Add this import
 
 import EventList from "../EventList/EventList";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -16,12 +18,6 @@ import SearchHereButton from "../SearchHereButton/SearchHereButton";
 export default function MapContainer() {
   useRenderCounter(`MapContainer`);
 
-  const [onDragEnd, setOnDragEnd] = useState(false);
-
-  const showSearchHereButton = (e) => {
-    setOnDragEnd(true);
-  };
-
   const scrollRef = useRef([]);
   const [{ requestedEvents, amountOfResults }, setResultData] = useState({
     requestedEvents: [],
@@ -34,16 +30,11 @@ export default function MapContainer() {
     long: -0.05318,
     lat: 51.47707,
   });
-
+  const [newLatLong, setNewLatLong] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [resultsPageNumber, setResultsPageNumber] = useState(0);
   const [openDrawer, setOpenDrawer] = useState(false);
-
-  useEffect(() => {
-    console.log(`Running This On Load Only Once`);
-
-    //Do an automatic request for location and update
-    runMapWorker();
-  }, []);
+  const [clickedSearchHere, setClickedSearchHere] = useState(false);
 
   const mapStyle = {
     width: "100vw",
@@ -55,36 +46,6 @@ export default function MapContainer() {
       height: "100%",
     },
   };
-
-  async function runMapWorker(
-    location = { lat: null, long: null },
-    date = new Date(),
-    pageNumber = 0
-  ) {
-    try {
-      setOnDragEnd(false);
-      console.log(`running map worker`);
-      if (location.lat === null && location.long === null) {
-        location = await myLocationSearch();
-      }
-
-      const { lat, long } = location;
-      const resultsFromApi = await getMarkersFromLatLong(
-        { lat, long },
-        date,
-        pageNumber
-      );
-      // console.log(`date today: ${new Date()}`);
-      const [{ place_name: address }, { text: neighborhood }] =
-        await getAddressFromLatLong({ lat, long });
-      setNeighborhood(neighborhood);
-      setResultData(resultsFromApi);
-      setLatLong({ lat, long });
-      setExecuteSearchButtonPressed(true);
-    } catch (error) {
-      console.log(`${error} \n runMapWorker Error`);
-    }
-  }
 
   const toggleDrawer = (newOpen) => () => {
     setOpenDrawer(newOpen);
@@ -126,7 +87,7 @@ export default function MapContainer() {
     scrollRef.current[index].scrollIntoView();
   }
 
-  console.log(scrollRef);
+  // console.log(scrollRef);
 
   return (
     <>
@@ -141,21 +102,42 @@ export default function MapContainer() {
       />
       <Container
         amountOfResults={amountOfResults}
-        runMapWorker={runMapWorker}
+        setNewLatLong={setNewLatLong}
+        setClickedSearchHere={setClickedSearchHere}
+        myLocationSearch={myLocationSearch}
+        // runMapWorker={runMapWorker}
       />
 
       <MapProvider>
+        {isLoading && (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="100vh"
+          >
+            <CircularProgress sx={{ zIndex: 600 }} position="absolute" />
+          </Box>
+        )}
         <MyMap
+          clickedSearchHere={clickedSearchHere}
+          setClickedSearchHere={setClickedSearchHere}
           long={long}
+          setIsLoading={setIsLoading}
           lat={lat}
           setLatLong={setLatLong}
           mapStyle={mapStyle}
           requestedEvents={requestedEvents}
           executeSearchButtonPressed={executeSearchButtonPressed}
           scrollToEventInDrawer={scrollToEventInDrawer}
-          showSearchHereButton={showSearchHereButton}
-          onDragEnd={onDragEnd}
-          runMapWorker={runMapWorker}
+          setExecuteSearchButtonPressed={setExecuteSearchButtonPressed}
+          setNeighborhood={setNeighborhood}
+          setResultData={setResultData}
+          getAddressFromLatLong={getAddressFromLatLong}
+          getMarkersFromLatLong={getMarkersFromLatLong}
+          newLatLong={newLatLong}
+          setNewLatLong={setNewLatLong}
+          // runMapWorker={runMapWorker}
         />
       </MapProvider>
     </>

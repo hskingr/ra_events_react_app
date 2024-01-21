@@ -1,14 +1,21 @@
 import { useMap } from "react-map-gl";
 import calcBoundsFromCoordinates from "../utils/calcBoundsFromCoordinates";
+import { set } from "date-fns";
 
-export default function ChangeBounds({ resultData, longitude, latitude }) {
+export default function ChangeBounds({
+  resultData,
+  longitude,
+  latitude,
+  setIsFirstRender,
+  setOnDragEnd,
+}) {
   function fitPointsInMap(data, latLong) {
     try {
       const coords = data.map(
         (loc) => loc.eventResult.venue_id.location.coordinates
       );
 
-      //   console.log([latLong, ...coords]);
+      // console.log([latLong, ...coords]);
       const bounds = calcBoundsFromCoordinates([latLong, ...coords]);
       //   console.log(`fitPointInMap: bounds: ${bounds[0]}, ${bounds[1]}`);
 

@@ -6,22 +6,23 @@ export default async function callTopTenResults(
   pageNumber = 0
 ) {
   try {
-    console.log({ lat, long }, date, pageNumber);
+    // console.log({ lat, long }, date, pageNumber);
     let connectionString = "";
     if (process.env.NODE_ENV === "development") {
+      date = "2024-01-20T19:15:00.293Z";
       connectionString = process.env.REACT_APP_API_ENDPOINT_URL;
     } else {
       // Production
       connectionString = `https://rm.libraryoftype.xyz/api/v1/getResults`;
     }
-    console.log(connectionString);
+    // console.log(connectionString);
     const result = await axios.post(connectionString, {
       lat,
       long,
       date,
       pageNumber,
     });
-    console.log(result);
+    // console.log(result);
     return await result.data;
   } catch (error) {
     throw error;

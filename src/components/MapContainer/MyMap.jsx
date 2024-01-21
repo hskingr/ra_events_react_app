@@ -1,34 +1,84 @@
 // MyMap.jsx
-import React, { useEffect, useState, useRef } from "react";
-import { Map, Marker } from "react-map-gl"; // Import necessary components
-import mapMarker from "./src/map-marker.png";
+import React, { useEffect, useState } from "react";
+import { Map, Marker } from "react-map-gl";
 import raMarker from "./src/ra.png";
 import ChangeBounds from "./ChangeBounds";
 import SearchHereButton from "../SearchHereButton/SearchHereButton";
+import { CircularProgress, Backdrop } from "@material-ui/core"; // Backdrop import
+import Box from "@mui/material/Box";
+import { myLocationSearch } from "./MapContainerLogic";
 
 function MyMap({
-  long, // longitude of the map
-  lat, // latitude of the map
-  mapStyle, // style of the map
-  requestedEvents, // array of requested events
-  executeSearchButtonPressed, // flag to indicate if the search button is pressed
-  scrollToEventInDrawer, // function to scroll to an event in the drawer
-  setLatLong, // function to set the latitude and longitude
-  showSearchHereButton, // function to show the search here button
-  onDragEnd, // flag to indicate if the map is dragged
-  runMapWorker, // function to run the map worker
+  long,
+  lat,
+  mapStyle,
+  requestedEvents,
+  setLatLong,
+  getMarkersFromLatLong,
+  getAddressFromLatLong,
+  setNeighborhood,
+  setResultData,
+  setExecuteSearchButtonPressed,
+  setIsLoading,
+  clickedSearchHere,
+  setClickedSearchHere,
+  setNewLatLong,
+  newLatLong,
 }) {
-  const [newLatLong, setNewLatLong] = useState(null); // state to store the new latitude and longitude
+  const [onDragEnd, setOnDragEnd] = useState(false);
+
+  useEffect(() => {
+    runMapWorker();
+  }, []);
+
+  useEffect(() => {
+    if (clickedSearchHere) {
+      runMapWorker({ lat: newLatLong.lat, long: newLatLong.long });
+      setClickedSearchHere(false);
+    }
+  }, [clickedSearchHere, newLatLong, setNewLatLong]);
+
+  async function runMapWorker(
+    location = { lat: null, long: null },
+    date = new Date(),
+    pageNumber = 0
+  ) {
+    try {
+      setIsLoading(true);
+      setOnDragEnd(false);
+      if (location.lat === null && location.long === null) {
+        location = await myLocationSearch();
+      }
+      const { lat, long } = location;
+      const resultsFromApi = await getMarkersFromLatLong(
+        { lat, long },
+        date,
+        pageNumber
+      );
+      const [{ place_name: address }, { text: neighborhood }] =
+        await getAddressFromLatLong({ lat, long });
+      setNeighborhood(neighborhood);
+      setResultData(resultsFromApi);
+      setLatLong({ lat, long });
+      setExecuteSearchButtonPressed(true);
+    } catch (error) {
+      console.error("runMapWorker Error", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   const handleOnDragEnd = (e) => {
-    showSearchHereButton();
+    setOnDragEnd(true);
     setNewLatLong({ lat: e.viewState.latitude, long: e.viewState.longitude });
-    console.log(e.viewState.latitude, e.viewState.longitude);
   };
 
   const searchHereButtonClicked = () => {
-    console.log(newLatLong);
-    runMapWorker({ lat: newLatLong.lat, long: newLatLong.long });
+    setClickedSearchHere(true);
+    setResultData({
+      requestedEvents: [],
+      amountOfResults: 0,
+    });
   };
 
   return (
@@ -54,10 +104,6 @@ function MyMap({
           const [long, lat] = marker.eventResult.venue_id.location.coordinates;
           return (
             <Marker
-              onClick={() => {
-                // sends the index to identify the element in the ref
-                scrollToEventInDrawer(index);
-              }}
               index={index}
               key={index}
               longitude={long}
@@ -65,13 +111,13 @@ function MyMap({
               anchor="bottom"
               icon-allow-overlap={true}
             >
-              {" "}
               <img alt="map-marker" src={raMarker} />
             </Marker>
           );
         })}
-        {executeSearchButtonPressed && !onDragEnd && (
+        {requestedEvents.length > 0 && !onDragEnd && (
           <ChangeBounds
+            setOnDragEnd={setOnDragEnd}
             longitude={long}
             latitude={lat}
             resultData={requestedEvents}
