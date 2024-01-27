@@ -19,7 +19,9 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 
 const formControlStyle = {
   borderRadius: 5,
-  width: "90%",
+  maxWidth: "480px",
+  order: 2,
+  flexGrow: 1,
 };
 
 const DateTextField = styled(TextField)({
@@ -38,6 +40,8 @@ const InputWrapper = styled(Box)`
 `;
 
 const inputStyle = {
+  display: "flex",
+  width: "100%",
   border: "1.5px solid rgba(0, 0, 0, 0)",
   borderRadius: "10px",
   backgroundColor: "white",
@@ -92,15 +96,22 @@ export default function SearchBar({ setNewLatLong, setClickedSearchHere }) {
   }
 
   const searchBarStyle = {
+    maxWidth: "460px",
+    display: "flex",
     height: "40px",
     position: "absolute",
     bottom: "100px",
     zIndex: "500",
+    left: "0",
+    right: "0",
+    margin: "auto",
+    paddingLeft: "16px", // Add this line
+    paddingRight: "16px", // Add this line
   };
 
   return (
-    <Container sx={searchBarStyle}>
-      <InputWrapper>
+    <Box display="flex" justifyContent="center">
+      <InputWrapper sx={searchBarStyle}>
         {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
         <DatePicker
           inputFormat="MM/dd/yyyy"
@@ -146,6 +157,7 @@ export default function SearchBar({ setNewLatLong, setClickedSearchHere }) {
         <IconButton
           color="secondary"
           sx={{
+            order: 3,
             // width: "10%",
             ml: 1,
             "&": {
@@ -162,6 +174,6 @@ export default function SearchBar({ setNewLatLong, setClickedSearchHere }) {
           <MyLocationIcon />
         </IconButton>
       </InputWrapper>
-    </Container>
+    </Box>
   );
 }

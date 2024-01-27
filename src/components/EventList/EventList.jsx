@@ -47,6 +47,7 @@ const EventList = forwardRef(function EventList(
   };
 
   const Puller = styled(Box)(({ theme }) => ({
+    maxWidth: "480px",
     width: 100,
     height: 4,
     backgroundColor: theme.palette.mode === "light" ? grey[300] : grey[900],
@@ -87,16 +88,21 @@ const EventList = forwardRef(function EventList(
     /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   return (
-    <Container sx={{ height: "100%" }}>
+    <Container sx={{ height: "100%", width: "480px" }}>
       <Global
         styles={{
           ".MuiDrawer-root > .MuiPaper-root": {
+            height: `calc(50% - ${drawerBleeding}px)`,
+            maxWidth: "480px",
+            left: "0",
+            right: "0",
+            margin: "auto",
             overflow: "visible",
-            height: `calc(80% - ${drawerBleeding}px)`,
           },
         }}
       />
       <SwipeableDrawer
+        classes={{ paper: "classes.paper" }}
         anchor="bottom"
         open={openDrawer}
         transitionDuration={500}
@@ -115,6 +121,7 @@ const EventList = forwardRef(function EventList(
         <Box
           className="TempDrawer"
           sx={{
+            maxWidth: "480px",
             position: "absolute",
             top: -drawerBleeding,
             borderTopLeftRadius: 8,
@@ -123,6 +130,7 @@ const EventList = forwardRef(function EventList(
             right: 0,
             left: 0,
             backgroundColor: "rgb(255, 255, 255)",
+            margin: "auto", // Add this line
           }}
         >
           <Puller />

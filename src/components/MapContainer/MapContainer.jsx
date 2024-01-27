@@ -10,7 +10,7 @@ import {
   myLocationSearch,
   getAddressFromLatLong,
 } from "./MapContainerLogic";
-import Container from "../Container/Container";
+import Overlay from "../Overlay/Overlay";
 import useRenderCounter from "../useRenderCounter/useRenderCounter";
 import MyMap from "./MyMap"; // Import the new component
 import SearchHereButton from "../SearchHereButton/SearchHereButton";
@@ -37,11 +37,13 @@ export default function MapContainer() {
   const [clickedSearchHere, setClickedSearchHere] = useState(false);
 
   const mapStyle = {
-    width: "100vw",
+    maxWidth: "480px", // mobile width
     height: "100vh",
     padding: "0",
     position: "absolute",
     top: "0",
+    left: "50%",
+    transform: "translateX(-50%)", // center the map
     "& .mapContainer": {
       height: "100%",
     },
@@ -100,7 +102,7 @@ export default function MapContainer() {
         openDrawer={openDrawer}
         ref={scrollRef}
       />
-      <Container
+      <Overlay
         amountOfResults={amountOfResults}
         setNewLatLong={setNewLatLong}
         setClickedSearchHere={setClickedSearchHere}

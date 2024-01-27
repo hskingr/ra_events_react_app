@@ -5,7 +5,7 @@ import { Grid } from "@mui/material";
 import SearchBar from "../SearchBar/SearchBar";
 import { Box } from "@mui/system";
 
-function Container({
+function Overlay({
   amountOfResults,
   setNewLatLong,
   setClickedSearchHere,
@@ -14,12 +14,12 @@ function Container({
   return (
     <>
       <Header resultsCount={amountOfResults} />
-      <Box
+      {/* <Box
         position="absolute"
         bottom="0"
         left="50%"
         transform="translateX(-50%)"
-      ></Box>
+      ></Box> */}
       <SearchBar
         setNewLatLong={setNewLatLong}
         setClickedSearchHere={setClickedSearchHere}
@@ -28,4 +28,4 @@ function Container({
   );
 }
 
-export default Container;
+export default Overlay;

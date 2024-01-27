@@ -24,6 +24,7 @@ function MyMap({
   setClickedSearchHere,
   setNewLatLong,
   newLatLong,
+  scrollToEventInDrawer,
 }) {
   const [onDragEnd, setOnDragEnd] = useState(false);
 
@@ -104,6 +105,10 @@ function MyMap({
           const [long, lat] = marker.eventResult.venue_id.location.coordinates;
           return (
             <Marker
+              onClick={() => {
+                // sends the index to identify the element in the ref
+                scrollToEventInDrawer(index);
+              }}
               index={index}
               key={index}
               longitude={long}
