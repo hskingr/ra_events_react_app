@@ -51,6 +51,7 @@ function MyMap({
         location = await myLocationSearch();
       }
       const { lat, long } = location;
+      console.log("runMapWorker", lat, long, location, date, pageNumber);
       const resultsFromApi = await getMarkersFromLatLong(
         { lat, long },
         date,
