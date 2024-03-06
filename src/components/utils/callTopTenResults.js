@@ -10,7 +10,7 @@ export default async function callTopTenResults(
     let connectionString = "";
     if (process.env.NODE_ENV === "development") {
       date = "2024-01-20T19:15:00.293Z";
-      connectionString = process.env.REACT_APP_API_ENDPOINT_URL;
+      connectionString = "https://rm.libraryoftype.xyz/api/v1/getResults";
     } else {
       // Production
       connectionString = `https://rm.libraryoftype.xyz/api/v1/getResults`;
