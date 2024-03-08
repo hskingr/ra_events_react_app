@@ -6,7 +6,10 @@ import ChangeBounds from "./ChangeBounds";
 import SearchHereButton from "../SearchHereButton/SearchHereButton";
 import { CircularProgress, Backdrop } from "@material-ui/core"; // Backdrop import
 import Box from "@mui/material/Box";
-import { myLocationSearch } from "./MapContainerLogic";
+import {
+  myLocationSearch,
+  isPositionOutsideOfBounds,
+} from "./MapContainerLogic";
 
 function MyMap({
   long,
@@ -27,10 +30,17 @@ function MyMap({
   scrollToEventInDrawer,
 }) {
   const [onDragEnd, setOnDragEnd] = useState(false);
+  let outsideOfBounds;
 
   useEffect(() => {
     runMapWorker();
   }, []);
+
+  useEffect(() => {
+    if (outsideOfBounds) {
+      alert("The location is out of bounds!");
+    }
+  }, [outsideOfBounds]);
 
   useEffect(() => {
     if (clickedSearchHere) {
@@ -39,28 +49,45 @@ function MyMap({
     }
   }, [clickedSearchHere, newLatLong, setNewLatLong]);
 
+  // This function should get the location of the user
+  async function locationSearch(location) {
+    console.log("Location Search");
+    let lat, long;
+    // if location is null, get the user's location
+    if (location.lat === null && location.long === null) {
+      location = await myLocationSearch();
+    }
+    lat = location.lat;
+    long = location.long;
+
+    return { lat, long };
+  }
+
   async function runMapWorker(
     location = { lat: null, long: null },
     date = new Date(),
     pageNumber = 0
   ) {
     try {
+      console.log("Running Map Worker");
       setIsLoading(true);
       setOnDragEnd(false);
-      if (location.lat === null && location.long === null) {
-        location = await myLocationSearch();
+      let { lat, long } = await locationSearch(location, date);
+      const outsideOfBounds = await isPositionOutsideOfBounds({ lat, long });
+      if (outsideOfBounds) {
+        lat = 51.5074;
+        long = 0.1272;
       }
-      const { lat, long } = location;
-      console.log("runMapWorker", lat, long, location, date, pageNumber);
-      const resultsFromApi = await getMarkersFromLatLong(
+      const address = await getAddressFromLatLong({ lat, long });
+      const neighborhood = address[1].text;
+      const events = await getMarkersFromLatLong(
         { lat, long },
         date,
         pageNumber
       );
-      const [{ place_name: address }, { text: neighborhood }] =
-        await getAddressFromLatLong({ lat, long });
+
       setNeighborhood(neighborhood);
-      setResultData(resultsFromApi);
+      setResultData(events);
       setLatLong({ lat, long });
       setExecuteSearchButtonPressed(true);
     } catch (error) {

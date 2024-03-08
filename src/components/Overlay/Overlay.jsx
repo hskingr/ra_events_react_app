@@ -12,7 +12,7 @@ function Overlay({
   myLocationSearch,
 }) {
   return (
-    <>
+    <Box sx={{ width: "100%" }}>
       <Header resultsCount={amountOfResults} />
       {/* <Box
         position="absolute"
@@ -24,7 +24,7 @@ function Overlay({
         setNewLatLong={setNewLatLong}
         setClickedSearchHere={setClickedSearchHere}
       />
-    </>
+    </Box>
   );
 }
 
