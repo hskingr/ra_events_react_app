@@ -75,8 +75,8 @@ function MyMap({
       let { lat, long } = await locationSearch(location, date);
       const outsideOfBounds = await isPositionOutsideOfBounds({ lat, long });
       if (outsideOfBounds) {
-        lat = 51.5074;
-        long = 0.1272;
+        lat = 51.5202;
+        long = 0.0938;
       }
       const address = await getAddressFromLatLong({ lat, long });
       const neighborhood = address[1].text;
@@ -103,6 +103,7 @@ function MyMap({
   };
 
   const searchHereButtonClicked = () => {
+    // Only seacch inside the boundaries
     setClickedSearchHere(true);
     setResultData({
       requestedEvents: [],

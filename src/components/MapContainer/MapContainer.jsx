@@ -38,7 +38,10 @@ export default function MapContainer() {
 
   const mapStyle = {
     maxWidth: "480px", // mobile width
-    height: "100vh",
+    minHeight: "calc(100vh - constant(safe-area-inset-bottom))",
+    minHeight: "calc(100vh - env(safe-area-inset-bottom))",
+    width: "100%",
+    height: "100%",
     padding: "0",
     position: "absolute",
     top: "0",
