@@ -1,0 +1,14 @@
+services:
+  ra-mapper-react-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: docker-registry.libraryoftype.xyz/ra-mapper-react-app:latest
+    networks:
+      - myNetwork
+    labels:
+      - 'traefik.http.routers.ra-mapper-react-app.rule=Host(`resident-mapper.libraryoftype.xyz`)'
+networks:
+  myNetwork:
+    external: true
+    name: myNetwork

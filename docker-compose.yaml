@@ -1,12 +1,12 @@
 version: "3"
 services:
-  resident_mapper_react_app_dev:
+  ra-mapper-react-app:
     container_name: resident_mapper_react_app_dev
     build:
       context: .
       args:
         - REACT_APP_MAPBOX_ACCESS_TOKEN
-    image: f4zphp27xi2s27yn/my_repo_topor:resident_mapper_react_app_dev
+    image: docker-registry.libraryoftype.xyz/ra-mapper-react-app:latest
     ports:
       - 80:80
     volumes:

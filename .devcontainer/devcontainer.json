@@ -11,7 +11,7 @@
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "npm i  --legacy-peer-deps ",
+  "postCreateCommand": "npm i  --legacy-peer-deps && docker context create motherhouse --docker 'host=ssh://motherhouse'",
   "mounts": [
     "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
     "type=bind,source=/home/harry/.ssh,target=/home/node/.ssh,readonly"

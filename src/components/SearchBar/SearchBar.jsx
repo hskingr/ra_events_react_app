@@ -3,8 +3,6 @@ import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { getNewResultsFromSearch } from "./SearchBarLogic";
 
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { InputUnstyled } from "@mui/base";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";

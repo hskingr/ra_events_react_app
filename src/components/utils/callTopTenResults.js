@@ -9,11 +9,11 @@ export default async function callTopTenResults(
     // console.log({ lat, long }, date, pageNumber);
     let connectionString = "";
     if (process.env.NODE_ENV === "development") {
-      date = "2024-01-20T19:15:00.293Z";
-      connectionString = "https://rm.libraryoftype.xyz/api/v1/getResults";
+      // date = "2024-01-20T19:15:00.293Z";
+      connectionString = "http://127.0.0.1:8031/api/v1/getResults";
     } else {
       // Production
-      connectionString = `https://rm.libraryoftype.xyz/api/v1/getResults`;
+      connectionString = `https://ra-mapper-api.libraryoftype.xyz/api/v1/getResults`;
     }
     // console.log(connectionString);
     const result = await axios.post(connectionString, {
